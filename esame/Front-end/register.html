@@ -42,7 +42,7 @@
                         <h1 class="text-center text-black mb-4">Register</h1>
                         <div class="mb-3 d-flex flex-column align-items-center">
                             <label class="form-label text-black text-center" for="email">Username*</label>
-                            <input required type="username" class="form-control w-100 shadow-none bg-transparent border-bottom border-success border-top-0 border-start-0 border-end-0 rounded-0" id="email">
+                            <input required minlength="3" type="username" class="form-control w-100 shadow-none bg-transparent border-bottom border-success border-top-0 border-start-0 border-end-0 rounded-0" id="email">
                         </div>
                         <div class="mb-3 d-flex flex-column align-items-center">
                             <label class="form-label text-black text-center" for="email">Email address*</label>
@@ -50,7 +50,7 @@
                         </div>
                         <div class="mb-3 d-flex flex-column align-items-center">
                             <label class="form-label text-black" for="password">Password*</label>
-                            <input required type="password" class="form-control w-100 shadow-none bg-transparent border-bottom border-success border-top-0 border-start-0 border-end-0 rounded-0" id="password">
+                            <input required minlength="8" type="password" class="form-control w-100 shadow-none bg-transparent border-bottom border-success border-top-0 border-start-0 border-end-0 rounded-0" id="password">
                         </div>
                         <div class="mb-3 form-check">
                             <input onchange="togglePass()" type="checkbox" class="form-check-input shadow-none bg-transparent border-success text-black" id="check">
