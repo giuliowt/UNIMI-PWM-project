@@ -2,11 +2,11 @@
     background-color: #ffb53452;
 }
 
-#logbtn {
+.logbtn {
     transition: background-color 0.5s;
 }
 
-#logbtn:hover {
+.logbtn:hover {
     background-color: rgba(81, 255, 0, 0.2);
 }
 

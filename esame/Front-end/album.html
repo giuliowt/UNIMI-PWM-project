@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Exchange</title>
+        <link href="../images/logo.svg" rel="icon" type="image/x-icon">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link href="./style.css" rel="stylesheet">
+        <link href="./albumstyle.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- fixed header, fixed=posizone fissata (anche con lo scrolling) -->
+        <nav id="header" class="navbar navbar-expand-lg fixed-top w-100">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="./AFSE.html">AFSE</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-decoration-underline" href="./album.html">Album</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./exchange.html">Exchange</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./store.html">Store</a>
+                    </li>
+                    </ul>
+                    <div class="d-flex justify-content-lg-end">
+                        <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./userprofile.html?id=">Profile</a>
+                        <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
+                    </div>
+
+                    <script>
+                        logBtns = document.getElementsByClassName("logbtn")
+                        if(localStorage.getItem("sessionid")) {
+                            logBtns[0].classList.remove("d-none")
+                            logBtns[0].href+=localStorage.getItem("sessionid")
+                        } else {
+                            logBtns[1].classList.remove("d-none")
+                        }
+                    </script>
+                </div>
+            </div>
+        </nav>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>   <!--necessario per implementare correttamente bootstrap--> 
+    </body>
+</html>

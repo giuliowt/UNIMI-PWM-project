@@ -31,8 +31,20 @@
                     </li>
                     </ul>
                     <div class="d-flex justify-content-lg-end">
-                        <a id="logbtn" class="text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
+                        <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./userprofile.html?id=">Profile</a>
+                        <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
                     </div>
+
+                    <script>
+                        logBtns = document.getElementsByClassName("logbtn")
+                        if(localStorage.getItem("sessionid")) {
+                            logBtns[0].classList.remove("d-none")
+                            logBtns[0].href+=localStorage.getItem("sessionid")
+                        } else {
+                            logBtns[1].classList.remove("d-none")
+                        }
+                    </script>
+
                 </div>
             </div>
         </nav>
