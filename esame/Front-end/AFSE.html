@@ -1,0 +1,168 @@
+<!-- FAR PARTIRE IL SITO IN LOCALHOST PER NON INCORRERE IN ERRORI NELLE API CALL -->
+<!doctype html>
+<html lang="it">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>AFSE</title>
+        <link href="../images/logo.svg" rel="icon" type="image/x-icon">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link href="./style.css" rel="stylesheet">
+        
+    </head>
+    <body>
+        <!-- fixed header, fixed=posizone fissata (anche con lo scrolling) -->
+        <nav id="header" class="navbar navbar-expand-lg fixed-top w-100">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="./AFSE.html">AFSE</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./album.html">Album</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./exchange.html">Exchange</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./store.html">Store</a>
+                    </li>
+                    </ul>
+                    <div class="d-flex justify-content-lg-end">
+                        <a id="logbtn" class="text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- prima parte che viene visualizzata del body -->
+        <div id="first" style="padding-top: 12vmax;">
+            <div class="container-fluid d-flex flex-column align-items-center justify-content-center">
+                <!-- frase iniziale -->
+                <div id="first-title" class="row-12 text-center w-100">
+                    <h1 class="first-font">
+                        Start collecting and exchanging cards
+                    </h1>
+                    <h1 class="first-font">
+                        of your favorite superheroes right now
+                    </h1>
+                </div>
+            </div>
+
+            <!-- preview carte di esempio -->
+            <div id="preview">
+                <h1 id="preview-text" class="text-center mt-2 mb-5">Take a look at some cards:</h1>
+                <div id="clonecontainer" class="container-fluid d-flex flex-wrap align-items-center justify-content-center">
+                    <!-- layout di ogni figurina (modellate singolarmente con js) -->
+                    <a href="./heroprofile.html?id=" style="text-decoration: none; color: inherit;" target="_blank">
+                        <div id="eroe" class="card mb-5 d-flex shadow align-items-center d-none col-lg-3 col-sm-4 col-6" style="background-color: transparent; border: none;">
+                            <div class="card figurina h-100 border-2">
+                                <img class="card-img card-img-top" src="" style="height: 15vmax; object-fit: cover;">  <!-- utilizzo di object-fit per far apparire tutte le immagini con la stessa dimensioni e non perdere le proporzioni -->
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <h5 class="card-title" style="font-size: 1vmax;">Card title</h5>
+                                    <a href="./heroprofile.html?id=" class="buybtn text-center text-decoration-none">Buy it</a>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- seconda parte che viene visualizzata del body -->
+        <div id="second">
+            <div class="container-fluid">
+                <h1 class="text-center py-5" style="color: #AAD7D9;">Website tools</h1>
+                <!-- lista dei tools usati -->
+                <div class="d-flex flex-wrap justify-content-around align-items-center">
+                    <div class="col-sm-4 col-6 d-flex justify-content-center mb-5">
+                        <div class="border border-info tool rounded-2">
+                            <img class="card-img-top p-3 border-bottom border-info" style="height: 15vmax;" src="../images/tools/HTML5.svg">
+                            <div class="card-body py-4" style="background-color:rgba(255, 255, 255, 0.20);">
+                                <p class="card-text text-center" style="color: #AAD7D9; font-size: 1.5vmax;">HTML5</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 col-6 d-flex justify-content-center mb-5">
+                        <div class="tool border border-info rounded-2">
+                            <img class="card-img-top p-3 border-bottom border-info" style="height: 15vmax;" src="../images/tools/CSS3.svg">
+                            <div class="card-body py-4" style="background-color:rgba(255, 255, 255, 0.20);">
+                                <p class="card-text text-center" style="color: #AAD7D9; font-size: 1.5vmax;">CSS3</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 col-6 d-flex justify-content-center mb-5">
+                        <div class="tool border border-info rounded-2">
+                            <img class="card-img-top p-3 border-bottom border-info" style="height: 15vmax;" src="../images/tools/Bootstrap.svg">
+                            <div class="card-body py-4" style="background-color:rgba(255, 255, 255, 0.20);">
+                                <p class="card-text text-center" style="color: #AAD7D9; font-size: 1.5vmax;">Bootstrap</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 col-6 d-flex justify-content-center mb-5">
+                        <div class="tool border border-info rounded-2">
+                            <img class="card-img-top p-3 border-bottom border-info" style="height: 15vmax;" src="../images/tools/Javascript.svg">
+                            <div class="card-body py-4" style="background-color:rgba(255, 255, 255, 0.20);">
+                                <p class="card-text text-center" style="color: #AAD7D9; font-size: 1.5vmax;">Javascript</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 col-6 d-flex justify-content-center mb-5">
+                        <div class="tool border border-info rounded-2">
+                            <img class="card-img-top p-3 border-bottom border-info" style="height: 15vmax;" src="../images/tools/NodeJS.svg">
+                            <div class="card-body py-4" style="background-color:rgba(255, 255, 255, 0.20);">
+                                <p class="card-text text-center" style="color: #AAD7D9; font-size: 1.5vmax;">NodeJS</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 col-6 d-flex justify-content-center mb-5">
+                        <div class="tool border border-info rounded-2">
+                            <img class="card-img-top p-3 border-bottom border-info" style="height: 15vmax;" src="../images/tools/MongoDB.svg">
+                            <div class="card-body py-4" style="background-color:rgba(255, 255, 255, 0.20);">
+                                <p class="card-text text-center" style="color: #AAD7D9; font-size: 1.5vmax;">MongoDB</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer della pagina -->
+        <div id="footer" class="pt-4 pb-3">
+            <div class="container-fluid d-flex flex-column align-items-center">
+                
+                <!-- eventuali pagine social di AFSE -->
+                <div class="d-flex justify-content-around pb-2" style="width: 10%;">
+                    <a href="#"><img class="social" style="width: 2.5vw;" src="../images/instagram.svg"></a>
+                    <a href="#"><img class="social" style="width: 2.5vw;" src="../images/youtube.svg"></a>
+                    <a href="#"><img class="social" style="width: 2.5vw;" src="../images/facebook.svg"></a>
+                </div>
+
+                <!-- eventuali informazioni aggiuntive di AFSE -->
+                <div class="d-flex justify-content-around pb-2" style="width: 25%;">
+                    <a href="#" style="color: white; font-family: sans-serif; font-size: 1vmax;">Privacy policy</a>
+                    <a href="#" style="color: white; font-family: sans-serif; font-size: 1vmax;">Security</a>
+                    <a href="#" style="color: white; font-family: sans-serif; font-size: 1vmax;">Cookies</a>
+                </div>
+                <h6 style="color: white; font-size: 1vmax;">Album delle Figurine dei Super Eroi</h6>
+            </div>
+        </div>
+
+        <script src="./lib.js"></script>
+        <!-- script per generare carte di esempio -->
+        <script>
+            getFromMarvel("public/characters")
+                .then(response => mostraFigurine(response, 8))
+            
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>   <!--necessario per implementare correttamente bootstrap--> 
+    </body>
+</html>

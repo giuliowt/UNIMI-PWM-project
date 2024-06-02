@@ -1,0 +1,152 @@
+body {
+    background-image: url(../images/exchangeback.jpg);
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* stile del bottone per aggiungere uno scambio */
+#addtrade {
+    cursor: pointer;
+    transition: background-color 0.5s;
+    background-color: transparent;
+    width: 4vmax;
+    height: 4vmax;
+    font-size: 4vmax;
+}
+
+#addtrade:hover {
+    background-color: rgba(81, 255, 0, 0.2);
+}
+
+/* stile di ogni proposta di scambio */
+.proposta {
+    width: 20vmax;
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: transform 1s, background-color 1s;
+}
+
+.proposta:hover {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.delbtn {
+    color: rgb(152, 0, 0);
+    border: 1px solid rgb(152, 0, 0);
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.5s;
+    font-size: 1.5vmax; 
+    width: 100%;
+}
+
+.delbtn:hover {
+    background-color: rgba(152, 0, 0, 0.3);
+}
+
+/* stile bottone per accettare scambio */
+.getbtn {
+    color: rgb(0, 152, 0);
+    border: 1px solid rgb(0, 152, 0);
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.5s;
+    font-size: 1.5vmax; 
+    width: 100%;
+    cursor: pointer;
+}
+
+.getbtn:hover {
+    background-color: rgba(0, 152, 0, 0.3);
+}
+
+.givecard {
+    cursor: pointer;
+    transition: transform 0.5s;
+    width: 6vmax;
+    height: 6vmax;
+}
+
+.givecard:hover {
+    transform: scale(1.1);
+}
+
+.receivecard {
+    cursor: pointer;
+    transition: transform 0.5s;
+    width: 6vmax;
+    height: 6vmax;
+    padding: 0;
+}
+
+.receivecard:hover {
+    transform: scale(1.1);
+}
+
+/* form per cercare figurina */
+#searchero {
+    transition: border-bottom 0.25s, transform 0.5s;
+}
+
+#searchero:focus {
+    border-bottom: 3px solid green !important;
+    transform: scaleX(1.1);
+}
+
+#searchero:hover {
+    border-bottom: 3px solid green !important;
+    transform: scaleX(1.1);
+}
+
+#searchero::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* stile di ogni scelta ritornata dalla ricerca */
+.scelta {
+    background-color: rgba(255, 255, 255, 0.25);
+    transition: background-color 1s;
+}
+
+.scelta:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* stile bottone per accettare scambio */
+.receivebtn {
+    color: rgb(0, 152, 0);
+    border: 1px solid rgb(0, 152, 0);
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.5s;
+    font-size: 0.75vmax; 
+    width: 100%;
+    cursor: pointer;
+}
+
+.receivebtn:hover {
+    background-color: rgba(0, 152, 0, 0.3);
+}
+
+/* stile bottone per offrire carta */
+.offerbtn {
+    color: rgb(152, 0, 0);
+    border: 1px solid rgb(152, 0, 0);
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.5s;
+    font-size: 0.75vmax; 
+    width: 100%;
+    cursor: pointer;
+}
+
+.offerbtn:hover {
+    background-color: rgba(152, 0, 0, 0.3);
+}
+
+/* * {
+    border: 2px solid red;
+} */

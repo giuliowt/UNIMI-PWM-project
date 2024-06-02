@@ -1,0 +1,55 @@
+body {
+    background-image: url(../images/storeback.jpg);
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* stile del bottone per comprare crediti */
+.buycredit {
+    cursor: pointer;
+    transition: background-color 0.5s;
+    background-color: transparent;
+}
+
+/* stile del form di ricerca dell'eroe */
+
+#searchero {
+    transition: border-bottom 0.25s, transform 0.5s;
+    outline: none;
+}
+
+#searchero:focus {
+    border-bottom: 3px solid green !important;
+    transform: scaleX(1.1);
+}
+
+#searchero:hover {
+    transform: scaleX(1.1);
+}
+
+#searchero::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.buycredit:hover {
+    background-color: rgba(81, 255, 0, 0.2);
+}
+
+/* stile bottone per acquisti */
+.getbtn {
+    color: rgb(0, 152, 0);
+    border: 1px solid rgb(0, 152, 0);
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.5s;
+    font-size: 1.5vmax; 
+    width: 100%;
+    cursor: pointer;
+    background-color: transparent;
+    outline: none;
+}
+
+.getbtn:hover {
+    background-color: rgba(0, 152, 0, 0.3);
+}

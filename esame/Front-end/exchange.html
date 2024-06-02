@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="it">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Exchange</title>
+        <link href="../images/logo.svg" rel="icon" type="image/x-icon">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link href="./style.css" rel="stylesheet">
+        <link href="./exchangestyle.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- div per oscurare tutti gli altri elementi durante l'aggiunta di una nuova offerta -->
+        <div id="obscure" class="d-none opacity-75 position-fixed w-100 h-100 z-1 bg-secondary"></div>
+
+        <!-- modulo da compilare per la pubblicazione di un'offerta (in posizione fixed così da essere sempre visibile all'utente) -->
+        <!-- translate-middle usato per centrare elemento -->
+        <div id="newtrade" class="d-none position-fixed z-1 start-50 top-50 w-50 translate-middle p-3" style="margin: 0 auto; background-color: rgba(0, 0, 0, 0.75);">
+            <h1 class="text-center text-white border-bottom" style="font-size: 2.5vmax;">New trade offer</h1>
+            <div class="d-flex">
+                <div class="d-flex flex-column pt-3 w-50 border-end">
+                    <h4 class="text-center text-white" style="font-size: 1.5vmax;">Offer</h4>
+                    <p class="text-center text-white" style="font-size: 0.75vmax;">(max 3 cards)</p>
+                    <!-- carte offerte -->
+                    <div id="offeredCards" class="d-flex flex-wrap justify-content-around">
+                        <div class="d-flex flex-column align-items-center">
+                            <img src="../images/delbtn.svg" onclick="toggleModuloOffri(0)" class="rounded givecard d-flex justify-content-center align-items-center">
+                            <h3 class="text-white pt-2" style="font-size: 0.75vmax;"></h3>
+                        </div>
+                        <div class="d-flex flex-column align-items-center">
+                            <img src="../images/delbtn.svg" onclick="toggleModuloOffri(1)" class="rounded givecard d-flex justify-content-center align-items-center">
+                            <h3 class="text-white pt-2" style="font-size: 0.75vmax;"></h3>
+                        </div>
+                        <div class="d-flex flex-column align-items-center">
+                            <img src="../images/delbtn.svg" onclick="toggleModuloOffri(2)" class="rounded givecard d-flex justify-content-center align-items-center">
+                            <h3 class="text-white pt-2" style="font-size: 0.75vmax;"></h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column pt-3 w-50">
+                    <h4 class="text-center text-white" style="font-size: 1.5vmax;">Receive</h4>
+                    <p class="text-center text-white" style="font-size: 0.75vmax;">(max 3 cards)</p>
+                    <!-- carte ricevute -->
+                    <div id="receivedCards" class="d-flex flex-wrap justify-content-around">
+                        <div class="d-flex flex-column align-items-center">
+                            <img src="../images/addbtn.svg" onclick="toggleModuloRicevi(0)" class="receivecard d-flex justify-content-center align-items-center rounded">
+                            <h3 class="text-white pt-2" style="font-size: 0.6vmax;"></h3>
+                        </div>
+                        <div class="d-flex flex-column align-items-center">
+                            <img src="../images/addbtn.svg" onclick="toggleModuloRicevi(1)" class="receivecard d-flex justify-content-center align-items-center rounded">
+                            <h3 class="text-white pt-2" style="font-size: 0.6vmax;"></h3>
+                        </div>
+                        <div class="d-flex flex-column align-items-center">
+                            <img src="../images/addbtn.svg" onclick="toggleModuloRicevi(2)" class="receivecard d-flex justify-content-center align-items-center rounded">
+                            <h3 class="text-white pt-2" style="font-size: 0.6vmax;"></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h1 href="#" class="getbtn mt-2 p-2" style="cursor: pointer;" onclick="pubblicaOfferta(this)">Publish</h1>
+            <h1 href="#" class="delbtn mt-2 p-2" style="cursor: pointer;" onclick="chiudiMenu()">Delete</h1>
+        </div>
+
+        <!-- modulo per la scelta delle figurine da ricevere (a destra del modulo per la creazione dell'offerta) -->
+        <div id="receivemodule" class="d-none position-fixed d-flex flex-column justify-content-center align-items-center z-1 top-50 end-0 translate-middle-y py-3 w-25" style="background-color: rgba(0, 0, 0, 0.75); max-height: 75%;">
+            <input id="searchero" class="form-control mb-3 text-white text-center shadow-none bg-transparent border-bottom border-success border-top-0 border-start-0 border-end-0 rounded-0"
+            type="search" placeholder="Superhero" aria-label="Search" style="width: 20vw; font-size: 1.5vmax;" oninput="cercaFigurineDaCedere()">
+            <!-- figurine trovate con la ricerca -->
+            <div id="clonecontainer" class="d-flex flex-wrap flex-row justify-content-around align-items-start w-100 px-2" style="overflow-y: auto; height: 100vh;">
+                <!-- layout di ogni figurina (modellate singolarmente con js) -->
+                <div id="eroe" class="card mb-5 d-flex text-decoration-none d-none shadow align-items-center col-md-4 col-sm-6 col-12" style="background-color: transparent; border: none;">
+                    <div class="card scelta h-100 border-2 p-1" style="width: 90%;">
+                        <a href="./heroprofile.html?id=" target="_blank" class="text-decoration-none text-dark" target="_blank">
+                            <img class="card-img card-img-top mb-2" src="" style="height: 5vmax; object-fit: cover;">  <!-- utilizzo di object-fit per far apparire tutte le immagini con la stessa dimensioni e non perdere le proporzioni -->
+                            <h5 class="card-title text-center" style="font-size: 0.75vmax;">Card title</h5>
+                        </a>
+                        <a onclick="insertIntoReceive(this)" class="receivebtn z-2">Receive</a>
+                    </div>
+                </div>                    
+            </div>   
+        </div>
+
+        <!-- modulo per la scelta della figurine da offrire (a sinistra del modulo per la creazione dell'offerta) -->
+        <div id="offermodule" class="d-none position-fixed d-flex flex-column justify-content-center align-items-center z-1 top-50 start-0 translate-middle-y py-3 px-4 w-25" style="background-color: rgba(0, 0, 0, 0.75); max-height: 75%;">
+            <h3 class="text-white border-bottom border-success pb-1 w-100 text-center" style="font-size: 1.5vmax;">Your cards</h3>
+            <!-- figurine trovate con la ricerca -->
+            <div id="clonecontainer" class="d-flex flex-wrap flex-row justify-content-around align-items-start w-100 px-2" style="overflow-y: auto; height: 100vh;">
+                <!-- layout di ogni figurina (modellate singolarmente con js) -->
+                <div id="eroe" class="card mb-5 d-flex text-decoration-none shadow align-items-center col-md-4 col-sm-6 col-12" style="background-color: transparent; border: none;">
+                    <div class="card scelta h-100 border-2 p-1" style="width: 90%;">
+                        <a href="./heroprofile.html?id=" class="text-decoration-none text-dark" target="_blank">
+                            <img class="card-img card-img-top mb-2" src="" style="height: 5vmax; object-fit: cover;">  <!-- utilizzo di object-fit per far apparire tutte le immagini con la stessa dimensioni e non perdere le proporzioni -->
+                            <h5 class="card-title text-center" style="font-size: 0.75vmax;">Card title</h5>
+                        </a>
+                        <a onclick="insertIntOffer(this)" class="offerbtn">Offer</a>
+                    </div>
+                </div>                    
+            </div>   
+        </div>
+
+        <!-- fixed header, fixed=posizone fissata (anche con lo scrolling) -->
+        <nav id="header" class="navbar navbar-expand-lg fixed-top w-100">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="./AFSE.html">AFSE</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./album.html">Album</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-decoration-underline" href="./exchange.html">Exchange</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./store.html">Store</a>
+                    </li>
+                    </ul>
+                    <div class="d-flex justify-content-lg-end">
+                        <a id="logbtn" class="text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- body -->
+        <div class="d-flex flex-column justify-content-between" style="height: 100vh;">
+            <!-- parte del body dove vengono visualizzati gli scambi -->
+            <div class="container-fluid" style="margin-top: 12vmax;">
+                <!-- scambi inseriti dall'utente corrente -->
+                <div class="row px-5 mb-5">
+                    <div class="text-white border-bottom d-flex justify-content-between align-items-center" style="text-shadow: 2px 2px 5px black;">
+                        <h1 style="font-size: 3vmax;">Your offers</h1>
+                        <button onclick="apriMenu()" id="addtrade" class="mb-1 text-success text-decoration-none d-flex justify-content-center align-items-center border border-success rounded">+</button>
+                    </div>
+                    <div class="d-flex flex-wrap">
+                        <!-- layout di ogni scambio creato dall'utente -->
+                        <div id="scambiutente" class="mt-3 d-none d-flex flex-row shadow justify-content-center col-lg-3 col-sm-4 col-6" style="background-color: transparent;">                        
+                            <div class="d-flex flex-column justify-content-between card proposta border-2 p-2">
+                                <div class="d-flex pt-2 h-100">
+                                    <div class="d-flex flex-column w-50 border-end">
+                                        <!-- offerta dell'utente -->
+                                        <h1 class="text-center" style="font-size: 1.25vmax;">offer</h1>
+                                        <div class="d-flex flex-column align-items-center justify-content-around h-100">
+                                            <div class="d-flex flex-column align-items-center justify-content-center" style="max-height: 30%;">
+                                                <a href="./heroprofile.html?id=" target="_blank" class="d-none text-center text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                                <a href="./heroprofile.html?id=" target="_blank" class="d-none text-center text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                                <a href="./heroprofile.html?id=" target="_blank" class="d-none text-center text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column w-50">
+                                        <!-- ricompensa in caso di accettazione dell'offerta -->
+                                        <h1 class="text-center" style="font-size: 1.25vmax;">receive</h1>
+                                        <div class="d-flex flex-column align-items-center justify-content-around h-100">
+                                            <div class="d-flex flex-column align-items-center justify-content-center" style="max-height: 30%;">
+                                                <a href="./heroprofile.html?id=" target="_blank" class="d-none text-center text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                                <a href="./heroprofile.html?id=" target="_blank" class="d-none text-center text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                                <a href="./heroprofile.html?id=" target="_blank" class="d-none text-center text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#" class="delbtn mt-2" onclick="removeOffer(this)">Remove</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- scambi inseriti da altri utenti -->
+                <div class="row px-5" style="margin-bottom: 10vmax;">
+                    <div class="text-white border-bottom d-flex justify-content-start align-items-center" style="text-shadow: 2px 2px 5px black;">
+                        <h1 style="font-size: 3vmax;">Global offers</h1>
+                    </div>
+                    <div class="d-flex flex-wrap">
+                        <!-- layout di ogni scambio globale -->
+                        <div class="mt-3 d-flex flex-row shadow justify-content-center col-lg-3 col-sm-4 col-6" style="background-color: transparent;">                        
+                            <div class="d-flex flex-column justify-content-between card proposta border-2 p-2">
+                                <div class="d-flex pt-2 h-100">
+                                    <div class="d-flex flex-column w-50 border-end">
+                                        <!-- offerta -->
+                                        <h1 class="text-center" style="font-size: 1.25vmax;">offer</h1>
+                                        <div class="d-flex flex-column align-items-center justify-content-around h-100">
+                                            <div class="d-flex flex-column align-items-center justify-content-center" style="max-height: 30%;">
+                                                <a href="./heroprofile.html?id=" target="_blank" class="text-center text-dark text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="card-title pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                                <a href="./heroprofile.html?id=" target="_blank" class="text-center text-dark text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="card-title pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                                <a href="./heroprofile.html?id=" target="_blank" class="text-center text-dark text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="card-title pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column w-50">
+                                        <!-- ricompensa -->
+                                        <h1 class="text-center" style="font-size: 1.25vmax;">receive</h1>
+                                        <div class="d-flex flex-column align-items-center justify-content-around h-100">
+                                            <div class="d-flex flex-column align-items-center justify-content-center" style="max-height: 30%;">
+                                                <a href="./heroprofile.html?id=" target="_blank" class="text-center text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="card-title pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                                <a href="./heroprofile.html?id=" target="_blank" class="text-center text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="card-title pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                                <a href="./heroprofile.html?id=" target="_blank" class="text-center text-dark text-decoration-none w-75">
+                                                    <img class="card-img card-img-top" src="" style="object-fit: cover;">
+                                                    <h6 class="card-title pt-2 text-center" style="font-size: 0.75vmax;">Card name</h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column mt-2 justify-content-center">
+                                    <p class="mb-2" style="font-size: 0.75vmax;">offered by: <a class="text-decoration-none" href="./userprofile.html?id=" target="_blank">user</a></p>
+                                    <a onclick="acceptTrade()" class="getbtn">Accept</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- footer della pagina -->
+            <div id="footer" class="pt-4 pb-3">
+                <div class="container-fluid d-flex flex-column align-items-center">
+                    
+                    <!-- eventuali pagine social di AFSE -->
+                    <div class="d-flex justify-content-around pb-2" style="width: 10%;">
+                        <a href="#"><img class="social" style="width: 2.5vw;" src="../images/instagram.svg"></a>
+                        <a href="#"><img class="social" style="width: 2.5vw;" src="../images/youtube.svg"></a>
+                        <a href="#"><img class="social" style="width: 2.5vw;" src="../images/facebook.svg"></a>
+                    </div>
+
+                    <!-- eventuali informazioni aggiuntive di AFSE -->
+                    <div class="d-flex justify-content-around pb-2" style="width: 25%;">
+                        <a href="#" style="color: white; font-family: sans-serif; font-size: 1vmax;">Privacy policy</a>
+                        <a href="#" style="color: white; font-family: sans-serif; font-size: 1vmax;">Security</a>
+                        <a href="#" style="color: white; font-family: sans-serif; font-size: 1vmax;">Cookies</a>
+                    </div>
+                    <h6 style="color: white; font-size: 1vmax;">Album delle Figurine dei Super Eroi</h6>
+                </div>
+            </div>
+        </div>
+
+        <script src="./lib.js"></script>
+        <script>
+            cercaFigurineDaCedere()
+            var newtrade = document.getElementById("newtrade")
+            var obscure = document.getElementById("obscure")
+            var receivemodule = document.getElementById("receivemodule")
+            var offermodule = document.getElementById("offermodule")
+            var receivedCards = document.getElementById("receivedCards")
+            var offeredCards = document.getElementById("offeredCards")
+            var clonecontainer = document.getElementById("clonecontainer")
+            var scambiutente = document.getElementById("scambiutente")
+            var selectedAddBtn
+            var selectedDelBtn
+            var offered=false, received=false
+
+            /* apri menu nuova offerta */
+            function apriMenu() {
+                if(localStorage.getItem("sessionid")) {
+                    obscure.classList.remove("d-none")
+                    newtrade.classList.remove("d-none")
+                } else {
+                    window.location = "./login.html"
+                }
+            }
+
+            /* chiude menu nuova offerta */
+            function chiudiMenu() {
+                obscure.classList.add("d-none")
+                newtrade.classList.add("d-none")
+                receivemodule.classList.add("d-none")
+                offermodule.classList.add("d-none")
+
+                for (let i = 0; i < 3; i++) {
+                    receivedCards.getElementsByTagName("div")[i].id=""
+                    receivedCards.getElementsByTagName("div")[i].getElementsByTagName("img")[0].src="../images/addbtn.svg"
+                    receivedCards.getElementsByTagName("div")[i].getElementsByTagName("h3")[0].innerHTML=""
+                    receivedCards.getElementsByTagName("div")[i].getElementsByTagName("img")[0].classList.remove("border")
+                    
+                    offeredCards.getElementsByTagName("div")[i].id=""
+                    offeredCards.getElementsByTagName("div")[i].getElementsByTagName("img")[0].src="../images/delbtn.svg"
+                    offeredCards.getElementsByTagName("div")[i].getElementsByTagName("h3")[0].innerHTML=""
+                    offeredCards.getElementsByTagName("div")[i].getElementsByTagName("img")[0].classList.remove("border")
+
+                }
+                offered=false
+                received=false
+            }
+
+            /* apre menu per selezionare quale figurina chiedere in una nuova offerta */
+            function toggleModuloRicevi(n) {
+                if(n!=selectedAddBtn)
+                    receivemodule.classList.remove("d-none")
+                else
+                    receivemodule.classList.toggle("d-none")
+
+                selectedAddBtn=n
+            }
+
+            /* apre menu per selezionare quale figurina chiedere in una nuova offerta */
+            function toggleModuloOffri(n) {
+                if(n!=selectedDelBtn)
+                    offermodule.classList.remove("d-none")
+                else
+                    offermodule.classList.toggle("d-none")
+
+                selectedDelBtn=n
+            }
+
+            /* inserisci figurina che verrà ricevuta selezionata nel modulo per l'offerta */
+            function insertIntOffer(hero) {
+                
+                offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].src=hero.parentNode.getElementsByTagName("img")[0].src; /* imposto l'immmagine dell'eroe al posto del pulsante add */
+
+                if(hero.parentNode.classList.contains("border-success")) {
+                    offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].classList.remove("border-warning")
+                    offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].classList.remove("border-danger")
+                    offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].classList.add("border","border-2","border-success") /* imposta lo stesso bordo (per indicare la rarità) */
+                } else if (hero.parentNode.classList.contains("border-danger")) {
+                    offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].classList.remove("border-success")
+                    offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].classList.remove("border-warning")
+                    offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].classList.add("border","border-2","border-danger") /* imposta lo stesso bordo (per indicare la rarità) */
+                } else if(hero.parentNode.classList.contains("border-warning")) {
+                    offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].classList.remove("border-success")
+                    offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].classList.remove("border-danger")
+                    offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("img")[0].classList.add("border","border-2","border-warning") /* imposta lo stesso bordo (per indicare la rarità) */
+                }
+
+
+                offeredCards.getElementsByTagName("div")[selectedDelBtn].id=hero.parentNode.id  /* copio l'id dell'eroe selezionato */
+                offeredCards.getElementsByTagName("div")[selectedDelBtn].getElementsByTagName("h3")[0].innerHTML=hero.parentNode.getElementsByTagName("h5")[0].innerHTML; /* imposto il nome dell'eroe sotto al pulsante add */
+                offermodule.classList.add("d-none")
+                offered=true
+            }
+
+             /* inserisci figurina che verrà offerta selezionata nel modulo per l'offerta */
+            function insertIntoReceive(hero) {
+                
+                receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].src=hero.parentNode.getElementsByTagName("img")[0].src; /* imposto l'immmagine dell'eroe al posto del pulsante add */
+                
+                if(hero.parentNode.classList.contains("border-success")) {
+                    receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].classList.remove("border-warning")
+                    receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].classList.remove("border-danger")
+                    receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].classList.add("border","border-2","border-success") /* imposta lo stesso bordo (per indicare la rarità) */
+                } else if (hero.parentNode.classList.contains("border-danger")) {
+                    receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].classList.remove("border-success")
+                    receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].classList.remove("border-warning")
+                    receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].classList.add("border","border-2","border-danger") /* imposta lo stesso bordo (per indicare la rarità) */
+                } else if(hero.parentNode.classList.contains("border-warning")) {
+                    receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].classList.remove("border-success")
+                    receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].classList.remove("border-danger")
+                    receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("img")[0].classList.add("border","border-2","border-warning") /* imposta lo stesso bordo (per indicare la rarità) */
+                }
+
+
+                receivedCards.getElementsByTagName("div")[selectedAddBtn].id=hero.parentNode.id  /* copio l'id dell'eroe selezionato */
+                receivedCards.getElementsByTagName("div")[selectedAddBtn].getElementsByTagName("h3")[0].innerHTML=hero.parentNode.getElementsByTagName("h5")[0].innerHTML; /* imposto il nome dell'eroe sotto al pulsante add */
+                receivemodule.classList.add("d-none")
+
+                received=true
+            }
+
+            /* rimuovi offerta creata dall'utente */
+            function removeOffer(offer) {
+                choice = confirm("Do you really want to delete this offer?")
+                if(choice)
+                    offer.parentNode.parentNode.remove()
+            }
+
+            /* funzione per mostrare graficamente una nuova offerta e salvarla nel server */
+            function pubblicaOfferta(offer) {
+
+                if(offered==false || received==false) {
+                    alert("you have to select at least 1 card to offer and 1 card to receive")
+                    return
+                }
+
+                scambio=scambiutente.cloneNode(true)
+                offer=offer.parentNode
+                IDs=[]
+
+                for (let i = 0; i < 6; i++) {
+                    if(offer.getElementsByTagName("img")[i].src.endsWith("/addbtn.svg")==false && offer.getElementsByTagName("img")[i].src.endsWith("/images/delbtn.svg")==false) {
+                        scambio.getElementsByTagName("img")[i].src=offer.getElementsByTagName("img")[i].src
+                        scambio.getElementsByTagName("h6")[i].innerHTML=offer.getElementsByTagName("h3")[i].innerHTML
+                        scambio.getElementsByTagName("a")[i].classList.remove("d-none")
+                        
+                        
+                        IDs.push(offer.getElementsByTagName("img")[i].parentNode.id)
+
+                        if(offer.getElementsByTagName("img")[i].classList.contains("border-success")) {
+                            scambio.getElementsByTagName("img")[i].classList.remove("border-warning")
+                            scambio.getElementsByTagName("img")[i].classList.remove("border-danger")
+                            scambio.getElementsByTagName("img")[i].classList.add("border","border-2","border-success") /* imposta lo stesso bordo (per indicare la rarità) */
+                        } else if (offer.getElementsByTagName("img")[i].classList.contains("border-danger")) {
+                            scambio.getElementsByTagName("img")[i].classList.remove("border-success")
+                            scambio.getElementsByTagName("img")[i].classList.remove("border-warning")
+                            scambio.getElementsByTagName("img")[i].classList.add("border","border-2","border-danger") /* imposta lo stesso bordo (per indicare la rarità) */
+                        } else if(offer.getElementsByTagName("img")[i].classList.contains("border-warning")) {
+                            scambio.getElementsByTagName("img")[i].classList.remove("border-success")
+                            scambio.getElementsByTagName("img")[i].classList.remove("border-danger")
+                            scambio.getElementsByTagName("img")[i].classList.add("border","border-2","border-warning") /* imposta lo stesso bordo (per indicare la rarità) */
+                        }
+                    }
+                }
+                
+                for (let i = 0; i < IDs.length; i++) {
+                    for (let j = 0; j < IDs.length; j++) {
+                        if(IDs[i]==IDs[j] && i!=j){
+                            alert("You can't offer or receive two equals card")
+                            return
+                        }
+                    }
+                }
+
+                scambio.classList.remove("d-none")
+                scambiutente.after(scambio)
+                chiudiMenu()
+            }
+        
+            function acceptTrade() {
+                if(localStorage.getItem("sessionid")) {
+                    
+
+                    
+                } else {
+                    window.location = "./login.html"
+                }
+            }
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>   <!--necessario per implementare correttamente bootstrap--> 
+    </body>
+</html>

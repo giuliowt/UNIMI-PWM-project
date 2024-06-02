@@ -1,0 +1,45 @@
+body {
+    background-image: url(../images/userprofileback.jpg);
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* stile dei form testuali */
+.form-control {
+    transition: border-bottom 0.25s, transform 0.5s;
+}
+
+.form-control:focus {
+    border-bottom: 3px solid green !important;
+    transform: scaleX(1.1);
+}
+
+.form-control:hover {
+    transform: scaleX(1.1);
+}
+
+/* stile dei bottoni per cambiare credenziali */
+.changebtn {
+    border: 1px solid rgba(81, 255, 0) !important;
+    background-color: rgba(81, 255, 0, 0.2);
+    transition: background-color 0.5s;
+}
+
+.changebtn:hover {
+    background-color: rgba(81, 255, 0, 0.5) !important;
+}
+
+/* stile dei bottoni per cancellare profile */
+.delbtn {
+    border: 1px solid rgba(255, 81, 0) !important;
+    background-color: rgba(255, 81, 0, 0.2);
+    transition: background-color 0.5s;
+}
+
+.delbtn:hover {
+    background-color: rgba(255, 81, 0, 0.5) !important;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}

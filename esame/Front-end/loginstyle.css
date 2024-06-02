@@ -1,0 +1,39 @@
+body {
+    background-image: url(../images/back.jpg);
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* stile dei form */
+.form-control {
+    transition: border-bottom 0.25s, transform 0.5s;
+}
+
+.form-control:focus {
+    border-bottom: 3px solid green !important;
+    transform: scaleX(1.1);
+}
+
+.form-control:hover {
+    transform: scaleX(1.1);
+}
+
+#logbtn {
+    border-color: rgba(81, 255, 0);
+    background-color: rgba(81, 255, 0, 0.2);
+    transition: background-color 0.5s;
+}
+
+#logbtn:hover {
+    background-color: rgba(81, 255, 0, 0.5) !important;
+}
+
+/* utilizzo un font esterno */
+@font-face {
+    font-family: myFont;
+    src: url(../Bruce\ Forever.ttf);
+}
+
+* {
+    font-family: myFont, 'Franklin Gothic Medium', Arial, sans-serif;  /* applicazione del font a tutti gli elementi della pagina */
+}
