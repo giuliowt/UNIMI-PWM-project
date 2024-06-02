@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Exchange</title>
+        <title>Album</title>
         <link href="../images/logo.svg" rel="icon" type="image/x-icon">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link href="./style.css" rel="stylesheet">
@@ -47,6 +47,61 @@
             </div>
         </nav>
 
+        <!-- body -->
+        <div class="d-flex flex-column justify-content-between" style="height: 100vh;">
+            <!-- figurine possedute dall'utente -->
+            <div class="row px-5 mb-5 w-100" style="margin-top: 10vmax;">
+                <h1 class="text-white border-bottom pb-2 mb-4" style="font-size: 3vmax; text-shadow: 2px 2px 5px black;">Your cards</h1>
+                <div class="d-flex flex-wrap" id="clonecontainer">
+                    <!-- layout di figurina dell'utente -->
+                    <!-- layout di ogni figurina (modellate singolarmente con js) -->
+                    <a href="./heroprofile.html?id=" style="text-decoration: none; color: inherit;" target="_blank">
+                        <div id="eroe" class="card mb-5 d-flex d-none shadow align-items-center col-lg-3 col-sm-4 col-6" style="background-color: transparent; border: none;">
+                            <div class="card figurina h-100 border-2 w-75">
+                                <img class="card-img card-img-top" src="" style="height: 15vmax; object-fit: cover;">  <!-- utilizzo di object-fit per far apparire tutte le immagini con la stessa dimensioni e non perdere le proporzioni -->
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <h5 class="card-title" style="font-size: 1vmax;">Card title</h5>
+                                    <a onclick="vendiFigurina()" class="sellbtn text-center text-decoration-none">Sell</a>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+            <!-- footer della pagina -->
+            <div id="footer" class="pt-4 pb-3">
+                <div class="container-fluid d-flex flex-column align-items-center">
+                    
+                    <!-- eventuali pagine social di AFSE -->
+                    <div class="d-flex justify-content-around pb-2" style="width: 10%;">
+                        <a href="#"><img class="social" style="width: 2.5vw;" src="../images/instagram.svg"></a>
+                        <a href="#"><img class="social" style="width: 2.5vw;" src="../images/youtube.svg"></a>
+                        <a href="#"><img class="social" style="width: 2.5vw;" src="../images/facebook.svg"></a>
+                    </div>
+
+                    <!-- eventuali informazioni aggiuntive di AFSE -->
+                    <div class="d-flex justify-content-around pb-2" style="width: 25%;">
+                        <a href="#" style="color: white; font-family: sans-serif; font-size: 1vmax;">Privacy policy</a>
+                        <a href="#" style="color: white; font-family: sans-serif; font-size: 1vmax;">Security</a>
+                        <a href="#" style="color: white; font-family: sans-serif; font-size: 1vmax;">Cookies</a>
+                    </div>
+                    <h6 style="color: white; font-size: 1vmax;">Album delle Figurine dei Super Eroi</h6>
+                </div>
+            </div>
+        </div>
+
+        <script src="./lib.js"></script>
+        <script>
+            id=localStorage.getItem("sessionid")
+            
+            /* if(localStorage.getItem("sessionid")) { */
+                    mostraFigurineUtente(id)
+            /* } else {
+                    window.location = "./login.html"
+            } */
+        </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>   <!--necessario per implementare correttamente bootstrap--> 
     </body>
 </html>

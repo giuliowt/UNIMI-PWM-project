@@ -66,6 +66,13 @@ function mostraFigurine(eroi, n=-1) {
     }
 }
 
+function mostraFigurineUtente(id) {
+
+
+    getFromMarvel("public/characters", "")
+        .then(response => mostraFigurine(response))
+}
+
 /* mostra tutte le informazioni su un eroe */
 function mostraEroeCompleto(eroe) {
     heroName = document.getElementsByClassName("card-title")[0]

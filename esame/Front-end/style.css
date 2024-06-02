@@ -46,6 +46,22 @@
     background-color: #99e6dd;
 }
 
+/* stile bottone per vendere figurina */
+.sellbtn {
+    background-color: transparent;
+    cursor: pointer;
+    color: rgb(94, 0, 0);
+    border: 1px solid red;
+    border-radius: 5px;
+    transition: background-color 0.5s;
+    font-size: 1.5vmax; 
+    width: 100%;
+}
+
+.sellbtn:hover {
+    background-color: #e69999;
+}
+
 /* stile della figurina */
 .figurina {
     width: 20vmax;
