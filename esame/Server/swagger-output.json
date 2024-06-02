@@ -1,0 +1,304 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Gestione utenti",
+    "description": "API per la gestione utenti",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5500/"
+    }
+  ],
+  "paths": {
+    "/addCard": {
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addCardSchema"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delCard": {
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/delCardSchema"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/loginSchema"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/registerSchema"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delete/{id}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/change": {
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/changeSchema"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "registerSchema": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "username"
+          },
+          "email": {
+            "type": "string",
+            "example": "mail@unimi.it"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          },
+          "favhero": {
+            "type": "string",
+            "example": "favhero"
+          }
+        },
+        "required": [
+          "username",
+          "email",
+          "password",
+          "favhero"
+        ]
+      },
+      "loginSchema": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "mail@unimi.it"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "addCardSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "id"
+          },
+          "cardID": {
+            "type": "string",
+            "example": "cardID"
+          }
+        },
+        "required": [
+          "id",
+          "cardID"
+        ]
+      },
+      "delCardSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "id"
+          },
+          "cardID": {
+            "type": "string",
+            "example": "cardID"
+          }
+        },
+        "required": [
+          "id",
+          "cardID"
+        ]
+      },
+      "changeSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "id"
+          },
+          "username": {
+            "type": "string",
+            "example": "username"
+          },
+          "email": {
+            "type": "string",
+            "example": "mail@unimi.it"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          },
+          "credit": {
+            "type": "number",
+            "example": 0
+          },
+          "favhero": {
+            "type": "string",
+            "example": "favhero"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "email",
+          "password",
+          "credit",
+          "favhero"
+        ]
+      }
+    }
+  }
+}
