@@ -35,7 +35,6 @@ function mostraFigurine(eroi, n=-1) {
         presentCard = clone.getElementsByClassName("card")[0];
         cardImg = clone.getElementsByClassName("card-img")[0];
         cardTitle = clone.getElementsByClassName("card-title")[0];
-        /* cardText = clone.getElementsByClassName("card-text")[0]; */
 
 
 
@@ -49,8 +48,8 @@ function mostraFigurine(eroi, n=-1) {
         presentCard.id=eroi.results[i].id /* collego a ogni figurina il relativo id così da averlo sempre a disposizione */
         cardImg.src=eroi.results[i].thumbnail.path+"."+eroi.results[i].thumbnail.extension;
         cardTitle.innerHTML=eroi.results[i].name;
-        /* cardText.innerHTML=eroi[i].description; */
 
+        
         /* calcola la rarità dell'eroe basandosi sulla quantità di fumetti in cui compare (più volte compare più è raro) */
         if(eroi.results[i].comics.available<=10) {
             presentCard.classList.add("border-success") /* comune */
@@ -65,6 +64,7 @@ function mostraFigurine(eroi, n=-1) {
         card.after(clone);
     }
 }
+
 
 function mostraFigurineUtente(id) {
 

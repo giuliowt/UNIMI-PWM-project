@@ -157,7 +157,9 @@ app.post("/login", async function(req, res) {
 
         /* controllo che la mail non sia già stata usata */
         if(query.length==0) {
-            res.status(400).send("wrong email or password")
+            res.status(400).send({
+                error: "wrong email or password"
+            })
         } else {
             res.status(200).send({
                 sessionid:query[0]._id  /* ritorno l'id così da avere un id di sessione */
@@ -187,14 +189,6 @@ app.post("/register", async function(req, res) {
     email = req.body.email
     password = req.body.password
     favhero = req.body.favhero
-    user = {
-        "username": username,
-        "email": email,
-        "password": hash(password),  /* password hashata per maggiore sicurezza */
-        "favhero": favhero,
-        "credit": 0,
-        "cards": []
-    }
 
     /* controllo campi validi */
     if(username.length<3 || username==undefined) {
@@ -210,6 +204,15 @@ app.post("/register", async function(req, res) {
     if(email==undefined) {
         res.status(400).send("wrong email");
         return;
+    }
+
+    user = {
+        "username": username,
+        "email": email,
+        "password": hash(password),  /* password hashata per maggiore sicurezza */
+        "favhero": favhero,
+        "credit": 0,
+        "cards": []
     }
   
     const pwmClient=await client.connect()
@@ -279,6 +282,10 @@ app.get("/user/:id", async function(req, res){
             credit: query.credit,
             cards: query.cards
         })
+    } else {
+        res.status(400).send({
+            error: "user not found"
+        })
     }
 })
 
@@ -318,7 +325,7 @@ app.post("/change", async function(req, res){
                 query[0].credit=req.body.credit
             if(req.body.favhero)
                 query[0].favhero=req.body.favhero
-                     
+
 
             await pwmClient.db("AFSE").collection("users").updateOne({
                 "_id": ObjectId.createFromHexString(id)
