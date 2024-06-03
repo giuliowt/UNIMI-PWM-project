@@ -344,3 +344,81 @@ app.post("/change", async function(req, res){
         await client.close();
     }
 })
+
+/* funzione per aggiungere un trade */
+app.post("/addtrade", async function(req, res) {
+    id=req.body.id
+    const pwmClient=await client.connect()
+
+    try {
+        /* controllo che l'utente selezionato esista */
+        query = await pwmClient.db("AFSE").collection("users").find({
+            "_id": ObjectId.createFromHexString(id)
+        }).toArray();
+
+        if(query.length!=0) {
+            trade={
+                "userID": id,
+                "offered": req.body.offered,
+                "received": req.body.received
+            }
+            
+            await pwmClient.db("AFSE").collection("trades").insertOne(trade);
+            res.status(201).send("trade added")
+        } else {
+            res.status(400).send("user not found")
+        }
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send("server error")
+    } finally {
+        await client.close();
+    }
+})
+
+/* funzione per cancellare un trade */
+app.delete("/trade/:id", async function(req, res) {
+    tradeID=req.params.id;
+
+    try {
+        const pwmClient=await client.connect()
+
+        /* controllo che l'utente a cui sto dando la figurina esista */
+        query = await pwmClient.db("AFSE").collection("trades").find({
+            "_id": ObjectId.createFromHexString(tradeID)
+        }).toArray();
+
+        if(query.length!=0) {
+            await pwmClient.db("AFSE").collection("trades").deleteOne({_id: ObjectId.createFromHexString(tradeID)});
+            await client.close();
+            res.status(201).send("trade deleted")
+        } else {
+            res.status(400).send("trade not found")
+        }
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send("server error")
+    } finally {
+        await client.close();
+    }
+})
+
+/* funzione per ottenere i trade */
+app.get("/getTrades", async function(req, res) {
+    const pwmClient=await client.connect()
+
+    try {
+        trades = await pwmClient.db("AFSE").collection("trades").find().toArray();
+        console.log(trades);
+        res.status(200).send(trades)
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({
+            error: "server error"
+        })
+    } finally {
+        await client.close();
+    }
+})
