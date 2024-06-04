@@ -112,7 +112,10 @@ async function vendiFigurina(figurina){
     if(confirm("Do you want to sell this card for credit: " + rarity + "?")) {
 
         user.credit+=rarity
-        user.cards.shift(cardID)
+
+        index = user.cards.indexOf(cardID)
+
+        user.cards.splice(index, 1)
         localStorage.setItem("user", JSON.stringify(user))        
 
         await fetch("http://localhost:5500/change", {
@@ -251,3 +254,51 @@ function cercaFigurineDaCedere() {
         getFromMarvel("public/characters")
             .then(response => mostraFigurine(response))
 }  
+
+/* funzione per mostrare figurine da offrire nella pagina exchange */
+async function mostraFigurineDaOffrire() {
+    offercard = document.getElementById("offereroe")
+
+    user = JSON.parse(localStorage.getItem("user"))
+    if(user==null)
+        return
+
+    eroi = []
+    for (let i = 0; i < user.cards.length; i++) {
+        await getFromMarvel("public/characters/"+user.cards[i])
+            .then(response => eroi.push(response.results[0]))  
+    }
+    n = eroi.length
+
+    for (let i = 0; i < n; i++) {
+        clone = offercard.cloneNode(true);  
+        presentCard = clone.getElementsByClassName("card")[0];
+        cardImg = clone.getElementsByClassName("card-img")[0];
+        cardTitle = clone.getElementsByClassName("card-title")[0];
+
+        /* metto l'href a ogni tag a in quanto vengono modificati rispetto al codice originale nella pagina finale */
+        links = clone.getElementsByTagName("a")
+        for (let j = 0; j < links.length; j++)
+            if(links[j].href.endsWith("heroprofile.html?id="))
+                links[j].href+=user.cards[i]
+
+        
+        presentCard.id=eroi[i].id /* collego a ogni figurina il relativo id così da averlo sempre a disposizione */
+        cardImg.src=eroi[i].thumbnail.path+"."+eroi[i].thumbnail.extension;
+        cardTitle.innerHTML=eroi[i].name;
+
+        
+        /* calcola la rarità dell'eroe basandosi sulla quantità di fumetti in cui compare (più volte compare più è raro) */
+        if(eroi[i].comics.available<=10) {
+            presentCard.classList.add("border-success") /* comune */
+        } else if(eroi[i].comics.available<=50) {
+            presentCard.classList.add("border-warning") /* rara */
+        } else {
+            presentCard.classList.add("border-danger") /* extra rara */
+        }
+
+        clone.href+=eroi[i].id
+        clone.classList.remove("d-none");
+        offercard.after(clone);
+    }
+}

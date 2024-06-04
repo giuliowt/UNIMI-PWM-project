@@ -213,7 +213,7 @@ app.post("/change", async function(req, res){
             query.username=req.body.username
         if(req.body.email)
             query.email=req.body.email
-        if(req.body.password)
+        if(req.body.password && req.body.password != "undefined")
             query.password=hash(req.body.password)
         if(req.body.credit)
             query.credit=req.body.credit
@@ -252,19 +252,19 @@ app.post("/addtrade", async function(req, res) {
       }
     } */
 
-    id=req.body.id
     const pwmClient=await client.connect()
 
     try {
-        
+
         trade={
-            "userID": id,
+            "userID": req.body.id,
+            "username": req.body.username,
             "offered": req.body.offered,
             "received": req.body.received
         }
             
         await pwmClient.db("AFSE").collection("trades").insertOne(trade);
-        res.status(201).send("trade added")
+        res.status(201).send("added new trade")
 
     } catch (e) {
         console.log(e);

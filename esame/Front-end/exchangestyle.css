@@ -38,6 +38,7 @@ body {
     transition: background-color 0.5s;
     font-size: 1.5vmax; 
     width: 100%;
+    cursor: pointer;
 }
 
 .delbtn:hover {

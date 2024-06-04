@@ -33,14 +33,6 @@
                         <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./userprofile.html?id=">Profile</a>
                         <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
                     </div>
-
-                    <script>
-                        logBtns = document.getElementsByClassName("logbtn")
-
-                        if(localStorage.getItem("sessionid")==null) {
-                            logBtns[0].classList.remove("d-none")
-                        }
-                    </script>
                 </div>
             </div>
         </nav>
@@ -124,7 +116,8 @@
             /* funzione per mostrare informazioni e bottoni per modificare utente */
             function showUserInfo(user) {
                 /* se utente è loggato può modificare e visualizzare completamente il profilo */
-                if(id==(JSON.parse(localStorage.getItem("user")).sessionid)) {
+                userToken = JSON.parse(localStorage.getItem("user"))
+                if(userToken!=null && id == userToken.sessionid) {
             
                     username.value=user.username
                     username.removeAttribute("disabled")
@@ -132,7 +125,6 @@
                     email.value=user.email
                     email.removeAttribute("disabled")
 
-                    password.value=user.password
                     password.classList.remove("d-none")
                     password.removeAttribute("disabled")
 
@@ -162,13 +154,14 @@
                     return
                 }
                 
-                if(password.value.length<=8) {
-                    alert("wrong password")
+                if(password.value.length<8) {
+                    alert("add your old password or a new one before continue (min 8 chars)")
                     return
                 }
 
                 param=param.parentNode.getElementsByTagName("input")[0]
                 paramName=param.id
+                user = JSON.parse(localStorage.getItem("user"))
 
                 fetch("http://localhost:5500/change", {
                     method: "POST",
@@ -184,6 +177,12 @@
                     })
                 }).then(response => response.text())
                   .then(response => alert(response))
+
+                user.username = username.value
+                user.email = email.value
+                user.favhero = favhero.value
+
+                localStorage.setItem("user", JSON.stringify(user))
             }
 
             /* funzione per cancellare account */
