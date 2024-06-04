@@ -30,6 +30,7 @@
                     </li>
                     </ul>
                     <div class="d-flex justify-content-lg-end">
+                        <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./userprofile.html?id=">Profile</a>
                         <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
                     </div>
 
@@ -101,7 +102,10 @@
                 </div>
             </div>
         </div>
+        <script src="./lib.js"></script>
         <script>
+            checkIfLogged()
+
             /* ottieni l'id dell'utente selezionato */
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
