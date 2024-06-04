@@ -33,16 +33,6 @@
                         <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./userprofile.html?id=">Profile</a>
                         <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
                     </div>
-
-                    <script>
-                        logBtns = document.getElementsByClassName("logbtn")
-                        if(localStorage.getItem("sessionid")) {
-                            logBtns[0].classList.remove("d-none")
-                            logBtns[0].href+=localStorage.getItem("sessionid")
-                        } else {
-                            logBtns[1].classList.remove("d-none")
-                        }
-                    </script>
                 </div>
             </div>
         </nav>
@@ -94,10 +84,11 @@
 
         <script src="./lib.js"></script>
         <script>
-            id=localStorage.getItem("sessionid")
+            checkIfLogged()
+            user=JSON.parse(localStorage.getItem("user"))
             
-            if(localStorage.getItem("sessionid")) {
-                    mostraFigurineUtente(id)
+            if(localStorage.getItem("user")) {
+                    mostraFigurineUtente(user.sessionid)
             } else {
                     window.location = "./login.html"
             }

@@ -11,58 +11,6 @@
     }
   ],
   "paths": {
-    "/addCard": {
-      "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/addCardSchema"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/delCard": {
-      "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/delCardSchema"
-              }
-            }
-          }
-        }
-      }
-    },
     "/login": {
       "post": {
         "description": "",
@@ -126,9 +74,6 @@
           "201": {
             "description": "Created"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -165,9 +110,6 @@
           "201": {
             "description": "Created"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -190,9 +132,6 @@
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "500": {
             "description": "Internal Server Error"
@@ -226,9 +165,6 @@
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "500": {
             "description": "Internal Server Error"
@@ -296,40 +232,6 @@
           "password"
         ]
       },
-      "addCardSchema": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "id"
-          },
-          "cardID": {
-            "type": "string",
-            "example": "cardID"
-          }
-        },
-        "required": [
-          "id",
-          "cardID"
-        ]
-      },
-      "delCardSchema": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "id"
-          },
-          "cardID": {
-            "type": "string",
-            "example": "cardID"
-          }
-        },
-        "required": [
-          "id",
-          "cardID"
-        ]
-      },
       "changeSchema": {
         "type": "object",
         "properties": {
@@ -356,6 +258,16 @@
           "favhero": {
             "type": "string",
             "example": "favhero"
+          },
+          "cards": {
+            "type": "array",
+            "example": [
+              1234,
+              5678
+            ],
+            "items": {
+              "type": "number"
+            }
           }
         },
         "required": [
@@ -364,7 +276,8 @@
           "email",
           "password",
           "credit",
-          "favhero"
+          "favhero",
+          "cards"
         ]
       },
       "addtradeSchema": {

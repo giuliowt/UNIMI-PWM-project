@@ -122,16 +122,6 @@
                         <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./userprofile.html?id=">Profile</a>
                         <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
                     </div>
-
-                    <script>
-                        logBtns = document.getElementsByClassName("logbtn")
-                        if(localStorage.getItem("sessionid")) {
-                            logBtns[0].classList.remove("d-none")
-                            logBtns[0].href+=localStorage.getItem("sessionid")
-                        } else {
-                            logBtns[1].classList.remove("d-none")
-                        }
-                    </script>
                 </div>
             </div>
         </nav>
@@ -284,6 +274,7 @@
 
         <script src="./lib.js"></script>
         <script>
+            checkIfLogged()
             cercaFigurineDaCedere()
             var newtrade = document.getElementById("newtrade")
             var obscure = document.getElementById("obscure")
@@ -299,7 +290,7 @@
 
             /* apri menu nuova offerta */
             function apriMenu() {
-                if(localStorage.getItem("sessionid")) {
+                if(JSON.stringify(localStorage.getItem("user"))) {
                     obscure.classList.remove("d-none")
                     newtrade.classList.remove("d-none")
                 } else {
@@ -462,7 +453,7 @@
             }
         
             function acceptTrade() {
-                if(localStorage.getItem("sessionid")) {
+                if(localStorage.getItem("user")) {
                     
 
                     

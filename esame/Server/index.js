@@ -14,7 +14,6 @@ app.use(cors()); //per evitare problemi di cors
 const { MongoClient, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://giulio:NM7Oj2a6auu2BrNU@afse.xunlcd2.mongodb.net/?retryWrites=true&w=majority&appName=AFSE";
 const client = new MongoClient(uri);
-client.connect();
 /*------------------------------------------------codice per utilizzare mongodb------------------------------------------------*/
 /*------------------------------------------------funzione per hashare------------------------------------------------*/
 function hash(input) {
@@ -34,107 +33,6 @@ app.listen(port, () => {
     console.log("AFSE listening on port " + port)
 })
 
-/* funzione per aggiungere una figurina */
-app.post("/addCard", async function(req, res){
-    /* #swagger.requestBody = {
-      required: true,
-      content: {
-          "application/json": {
-              schema: {
-                  $ref: "#/components/schemas/addCardSchema"
-              }  
-          }
-      }
-    } */
-
-    id=req.body.id
-    cardID=req.body.cardID
-    const pwmClient=await client.connect()
-    
-    try {
-        /* controllo che l'utente a cui sto dando la figurina esista */
-        query = await pwmClient.db("AFSE").collection("users").find({
-            "_id": ObjectId.createFromHexString(id)
-        }).toArray();
-
-        if(query.length!=0) {
-            await pwmClient.db("AFSE").collection("users").updateOne(
-                {_id:ObjectId.createFromHexString(id)},
-                {$push:{
-                    cards: cardID
-                }});
-            res.status(201).send("card added")
-        } else {
-            res.status(401).send("user not found")
-        }
-
-    } catch (e) {
-        await client.close();
-        console.log(e);
-        res.status(500).send("server error")
-    } finally {
-        await client.close();
-    }
-    
-})
-
-/* funzione per rimuovere una figurina */
-app.post("/delCard", async function(req, res){
-    /* #swagger.requestBody = {
-      required: true,
-      content: {
-          "application/json": {
-              schema: {
-                  $ref: "#/components/schemas/delCardSchema"
-              }  
-          }
-      }
-    } */
-
-    id=req.body.id
-    cardID=req.body.cardID
-    cardIsPresent=false
-    const pwmClient=await client.connect()
-    
-    try {
-        /* controllo che l'utente a cui sto dando la figurina esista */
-        query = await pwmClient.db("AFSE").collection("users").find({
-            "_id": ObjectId.createFromHexString(id)
-        }).toArray();
-        
-        if(query.length==0) {
-            res.status(400).send("user not found")
-            return
-        }
-
-        for (let i = 0; i < query[0].cards.length; i++) {
-            if(cardID==query[0].cards[i]) {
-                cardIsPresent=true
-                query[0].cards.splice(i, 1)
-                break;
-            }
-        }
-
-        if(cardIsPresent) {
-            await pwmClient.db("AFSE").collection("users").updateOne({
-                "_id": ObjectId.createFromHexString(id)
-            }, {$set:{
-                cards: query[0].cards
-            }})
-            res.status(201).send("card removed")
-        } else {
-            res.status(400).send("user haven't this card")
-        }
-
-    } catch (e) {
-        await client.close();
-        console.log(e);
-        res.status(500).send("server error")
-    } finally {
-        await client.close();
-    }
-    
-})
 
 /* funzione per loggare nuovo utente */
 app.post("/login", async function(req, res) {
@@ -166,11 +64,15 @@ app.post("/login", async function(req, res) {
             })
         } else {
             res.status(200).send({
-                sessionid:query[0]._id  /* ritorno l'id così da avere un id di sessione */
+                sessionid:query[0]._id,  /* ritorno l'id così da avere un id di sessione */
+                username: query[0].username,
+                email: query[0].email,
+                favhero: query[0].favhero,
+                credit: query[0].credit,
+                cards: query[0].cards
             })
         }
     } catch (e) {
-        await client.close();
         console.log(e);
     } finally {
         await client.close();
@@ -234,7 +136,6 @@ app.post("/register", async function(req, res) {
             res.status(400).send("email already in use")
         }
     } catch (e) {
-        await client.close();
         console.log(e);
     } finally {
         await client.close();
@@ -248,21 +149,11 @@ app.delete("/delete/:id", async function(req, res) {
     try {
         const pwmClient=await client.connect()
 
-        /* controllo che l'utente a cui sto dando la figurina esista */
-        query = await pwmClient.db("AFSE").collection("users").find({
-            "_id": ObjectId.createFromHexString(id)
-        }).toArray();
-
-        if(query.length!=0) {
-            await pwmClient.db("AFSE").collection("users").deleteOne({_id: ObjectId.createFromHexString(id)});
-            await client.close();
-            res.status(201).send("user deleted")
-        } else {
-            res.status(400).send("user not found")
-        }
+        await pwmClient.db("AFSE").collection("users").deleteOne({_id: ObjectId.createFromHexString(id)});
+        await client.close();
+        res.status(201).send("user deleted")
 
     } catch (e) {
-        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -275,7 +166,7 @@ app.get("/user/:id", async function(req, res){
     id=req.params.id;
     const pwmClient=await client.connect()
 
-    /* controllo che l'utente a cui sto dando la figurina esista */
+    /* query per prendere info sull'utente */
     query = await pwmClient.db("AFSE").collection("users").find({
         "_id": ObjectId.createFromHexString(id)
     }).toArray();
@@ -297,7 +188,7 @@ app.get("/user/:id", async function(req, res){
     await client.close();
 })
 
-/* funzione per cambiare proprietà */
+/* funzione per cambiare proprietà all'utente */
 app.post("/change", async function(req, res){
     /* #swagger.requestBody = {
       required: true,
@@ -312,43 +203,35 @@ app.post("/change", async function(req, res){
 
     id=req.body.id
     const pwmClient=await client.connect()
-    
 
     try {
-        /* controllo che l'utente selezionato esista */
-        query = await pwmClient.db("AFSE").collection("users").find({
+       
+        query = {}
+
+        /* utilizzo più if senza l'else if così da poter modificare più campi con una sola query */
+        if(req.body.username)
+            query.username=req.body.username
+        if(req.body.email)
+            query.email=req.body.email
+        if(req.body.password)
+            query.password=hash(req.body.password)
+        if(req.body.credit)
+            query.credit=req.body.credit
+        if(req.body.favhero)
+            query.favhero=req.body.favhero
+        if(req.body.credit)
+            query.credit=req.body.credit
+        if(req.body.cards)
+            query.cards=req.body.cards
+
+
+        await pwmClient.db("AFSE").collection("users").updateOne({
             "_id": ObjectId.createFromHexString(id)
-        }).toArray();
+        }, { $set: query })
 
-        if(query.length!=0) {
-           
-            /* utilizzo più if senza l'else if così da poter modificare più campi con una sola query */
-            if(req.body.username)
-                query[0].username=req.body.username
-            if(req.body.email)
-                query[0].email=req.body.email
-            if(req.body.password)
-                query[0].password=hash(req.body.password)
-            if(req.body.credit)
-                query[0].credit=req.body.credit
-            if(req.body.favhero)
-                query[0].favhero=req.body.favhero
-            if(req.body.credit)
-                query[0].credit=req.body.credit
-
-
-            await pwmClient.db("AFSE").collection("users").updateOne({
-                "_id": ObjectId.createFromHexString(id)
-            }, { $set: query[0] })
-
-            res.status(201).send("user updated")
-
-        } else {
-            res.status(400).send("user not found")
-        }
+        res.status(201).send("user updated")
 
     } catch (e) {
-        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -373,26 +256,17 @@ app.post("/addtrade", async function(req, res) {
     const pwmClient=await client.connect()
 
     try {
-        /* controllo che l'utente selezionato esista */
-        query = await pwmClient.db("AFSE").collection("users").find({
-            "_id": ObjectId.createFromHexString(id)
-        }).toArray();
-
-        if(query.length!=0) {
-            trade={
-                "userID": id,
-                "offered": req.body.offered,
-                "received": req.body.received
-            }
-            
-            await pwmClient.db("AFSE").collection("trades").insertOne(trade);
-            res.status(201).send("trade added")
-        } else {
-            res.status(400).send("user not found")
+        
+        trade={
+            "userID": id,
+            "offered": req.body.offered,
+            "received": req.body.received
         }
+            
+        await pwmClient.db("AFSE").collection("trades").insertOne(trade);
+        res.status(201).send("trade added")
 
     } catch (e) {
-        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -407,21 +281,10 @@ app.delete("/trade/:id", async function(req, res) {
     try {
         const pwmClient=await client.connect()
 
-        /* controllo che l'utente a cui sto dando la figurina esista */
-        query = await pwmClient.db("AFSE").collection("trades").find({
-            "_id": ObjectId.createFromHexString(tradeID)
-        }).toArray();
-
-        if(query.length!=0) {
-            await pwmClient.db("AFSE").collection("trades").deleteOne({_id: ObjectId.createFromHexString(tradeID)});
-            await client.close();
-            res.status(201).send("trade deleted")
-        } else {
-            res.status(400).send("trade not found")
-        }
+        await pwmClient.db("AFSE").collection("trades").deleteOne({_id: ObjectId.createFromHexString(tradeID)});
+        res.status(201).send("trade deleted")
 
     } catch (e) {
-        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -435,10 +298,8 @@ app.get("/getTrades", async function(req, res) {
 
     try {
         trades = await pwmClient.db("AFSE").collection("trades").find().toArray();
-        console.log(trades);
         res.status(200).send(trades)
     } catch (e) {
-        await client.close();
         console.log(e);
         res.status(500).send({
             error: "server error"

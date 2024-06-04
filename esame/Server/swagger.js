@@ -17,21 +17,14 @@ const doc = {
             $email:"mail@unimi.it",
             $password:"password"
         },
-        addCardSchema: {
-            $id:"id",
-            $cardID: "cardID" 
-        },
-        delCardSchema: {
-            $id:"id",
-            $cardID: "cardID" 
-        },
         changeSchema: {
             $id:"id",
             $username:"username",
             $email:"mail@unimi.it",
             $password:"password",
             $credit: 0,
-            $favhero: "favhero"
+            $favhero: "favhero",
+            $cards: [1234,5678]
         },
         addtradeSchema: {
             $id: "userID",

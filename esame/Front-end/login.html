@@ -113,7 +113,8 @@
                     .then(response => response.json())
                     .then(response => {
                         if(response.sessionid) {
-                            localStorage.setItem("sessionid", response.sessionid)
+                            localStorage.setItem("user", JSON.stringify(response))
+                            
                             alert("successfully logged in")
                             window.location = "./AFSE.html"
                         } else {

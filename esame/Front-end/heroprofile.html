@@ -33,16 +33,6 @@
                         <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./userprofile.html?id=">Profile</a>
                         <a class="logbtn d-none text-success border border-success rounded px-2 py-1 text-decoration-none" href="./login.html">Login</a>
                     </div>
-
-                    <script>
-                        logBtns = document.getElementsByClassName("logbtn")
-                        if(localStorage.getItem("sessionid")) {
-                            logBtns[0].classList.remove("d-none")
-                            logBtns[0].href+=localStorage.getItem("sessionid")
-                        } else {
-                            logBtns[1].classList.remove("d-none")
-                        }
-                    </script>
                 </div>
             </div>
         </nav>
@@ -117,6 +107,8 @@
 
         <script src="./lib.js"></script>
         <script>
+            checkIfLogged()
+
             /* ottieni le informazioni sull'eroe selezionato */
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
@@ -131,7 +123,7 @@
 
             /* funzione per comprare una figurina */
             function buy() {
-                if(localStorage.getItem("sessionid")) {
+                if(localStorage.getItem("user")) {
                     if(confirm("do you really want to buy this card?")) {
                         compraFigurina(id, rarity)
                     }
