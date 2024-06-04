@@ -2,8 +2,8 @@ const swaggerAutogen = require('swagger-autogen')({openapi:'3.0.0'});
 
 const doc = {
   info: {
-    title: 'Gestione utenti',
-    description: 'API per la gestione utenti'
+    title: 'Gestione AFSE',
+    description: 'API per la gestione di AFSE'
   },
   components: {
     schemas: {
@@ -32,6 +32,11 @@ const doc = {
             $password:"password",
             $credit: 0,
             $favhero: "favhero"
+        },
+        addtradeSchema: {
+            $id: "userID",
+            $offered: [1234,5678],
+            $received: [1234,5678]
         }
     }
   },

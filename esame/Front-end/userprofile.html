@@ -71,7 +71,7 @@
                         <div class="d-flex flex-wrap justify-content-sm-around justify-content-center">
                             <input disabled placeholder="fav hero" type="text" style="font-size: 1vmax;" class="text-white w-50 mb-3 form-control shadow-none bg-transparent border-bottom border-success border-top-0 border-start-0 border-end-0 rounded-0" id="favhero">
                         </div>
-                        <h1 class="text-white d-none" style="font-size: 1vmax;">Credit: </h1>
+                        <h1 class="text-white d-none mb-3" style="font-size: 1vmax;" id="credit">Credit: </h1>
                         <!-- bottone per cancellare profilo -->
                         <button id="changebtn" onclick="change(this)" type="submit" class="d-none btn text-white mb-3 form-btn changebtn" style="font-size: 1vmax;" >Change</button>
                         <button id="delbtn" onclick="delUser()" type="submit" class="btn d-none form-btn text-white delbtn mb-3" style="font-size: 1vmax;" >Delete profile</button>
@@ -102,7 +102,7 @@
             </div>
         </div>
         <script>
-            /* ottieni le informazioni sull'utente selezionato */
+            /* ottieni l'id dell'utente selezionato */
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
             
@@ -110,6 +110,8 @@
             email = document.getElementById("email")
             password = document.getElementById("password")
             favhero = document.getElementById("favhero")
+            credit = document.getElementById("credit")
+
             changeBtn = document.getElementById("changebtn")
             delBtn = document.getElementById("delbtn")
             logoutBtn = document.getElementById("logoutbtn")
@@ -120,7 +122,6 @@
                 /* se utente è loggato può modificare e visualizzare completamente il profilo */
                 if(id==localStorage.getItem("sessionid")) {
             
-
                     username.value=user.username
                     username.removeAttribute("disabled")
 
@@ -133,6 +134,9 @@
 
                     favhero.value=user.favhero
                     favhero.removeAttribute("disabled")
+
+                    credit.innerHTML+=user.credit
+                    credit.classList.remove("d-none")
 
                     changeBtn.classList.remove("d-none")
                     delBtn.classList.remove("d-none")
@@ -172,7 +176,7 @@
                         "username": username.value,
                         "password": password.value,
                         "email": email.value,
-                        "favhero": favhero.value
+                        "favhero": favhero.value,
                     })
                 }).then(response => response.text())
                   .then(response => alert(response))

@@ -1,3 +1,5 @@
+/* IN CASO DI ERROR DI TIPO 405 (METHOD NOT ALLOWED) RIAVVIARE IL SERVER WEB */
+
 const express = require('express');  //per gestire il server
 var cors = require('cors');  //per evitare problemi di cors
 const crypto = require('crypto');  //per hashare file
@@ -67,6 +69,7 @@ app.post("/addCard", async function(req, res){
         }
 
     } catch (e) {
+        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -124,6 +127,7 @@ app.post("/delCard", async function(req, res){
         }
 
     } catch (e) {
+        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -166,6 +170,7 @@ app.post("/login", async function(req, res) {
             })
         }
     } catch (e) {
+        await client.close();
         console.log(e);
     } finally {
         await client.close();
@@ -229,6 +234,7 @@ app.post("/register", async function(req, res) {
             res.status(400).send("email already in use")
         }
     } catch (e) {
+        await client.close();
         console.log(e);
     } finally {
         await client.close();
@@ -256,6 +262,7 @@ app.delete("/delete/:id", async function(req, res) {
         }
 
     } catch (e) {
+        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -287,6 +294,7 @@ app.get("/user/:id", async function(req, res){
             error: "user not found"
         })
     }
+    await client.close();
 })
 
 /* funzione per cambiare proprietà */
@@ -325,6 +333,8 @@ app.post("/change", async function(req, res){
                 query[0].credit=req.body.credit
             if(req.body.favhero)
                 query[0].favhero=req.body.favhero
+            if(req.body.credit)
+                query[0].credit=req.body.credit
 
 
             await pwmClient.db("AFSE").collection("users").updateOne({
@@ -338,6 +348,7 @@ app.post("/change", async function(req, res){
         }
 
     } catch (e) {
+        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -347,6 +358,17 @@ app.post("/change", async function(req, res){
 
 /* funzione per aggiungere un trade */
 app.post("/addtrade", async function(req, res) {
+    /* #swagger.requestBody = {
+      required: true,
+      content: {
+          "application/json": {
+              schema: {
+                  $ref: "#/components/schemas/addtradeSchema"
+              }  
+          }
+      }
+    } */
+
     id=req.body.id
     const pwmClient=await client.connect()
 
@@ -370,6 +392,7 @@ app.post("/addtrade", async function(req, res) {
         }
 
     } catch (e) {
+        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -398,6 +421,7 @@ app.delete("/trade/:id", async function(req, res) {
         }
 
     } catch (e) {
+        await client.close();
         console.log(e);
         res.status(500).send("server error")
     } finally {
@@ -414,6 +438,7 @@ app.get("/getTrades", async function(req, res) {
         console.log(trades);
         res.status(200).send(trades)
     } catch (e) {
+        await client.close();
         console.log(e);
         res.status(500).send({
             error: "server error"

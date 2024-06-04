@@ -120,17 +120,20 @@
             /* ottieni le informazioni sull'eroe selezionato */
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
+            
+
             if(id==null)
                 alert("missing id")
             getFromMarvel("public/characters/"+id)
                 .then(response => mostraEroeCompleto(response.results[0]))
-        
+
+            
+
             /* funzione per comprare una figurina */
             function buy() {
                 if(localStorage.getItem("sessionid")) {
-                    choice = confirm("do you really want to buy this card?")
-                    if(choice) {
-
+                    if(confirm("do you really want to buy this card?")) {
+                        compraFigurina(id, rarity)
                     }
                 } else {
                     window.location = "./login.html"

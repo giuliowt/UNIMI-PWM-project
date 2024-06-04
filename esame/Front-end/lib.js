@@ -65,12 +65,122 @@ function mostraFigurine(eroi, n=-1) {
     }
 }
 
+/* funzione per mostrare le figurine dell' utente nella sezione album */
+async function mostraFigurineUtente(id) {
+    cardsID = []
+    heroes = { /* creo un json utilizzabile dalla funzione mostraFigurine (con proprietà count e results) per sfruttare ancora la funzione */
+        count: 0,
+        results: []
+    }
 
-function mostraFigurineUtente(id) {
+    await fetch("http://localhost:5500/user/"+id)
+        .then(response => response.json())
+        .then(response => cardsID=response.cards)
 
+    for (let i = 0; i < cardsID.length; i++) {
+        await getFromMarvel("public/characters/"+cardsID[i])
+            .then(response => heroes.results.push(response.results[0]))  
+    }
+    heroes.count = cardsID.length
 
-    getFromMarvel("public/characters", "")
-        .then(response => mostraFigurine(response))
+    mostraFigurine(heroes)
+}
+
+/* funzione per vendere figurine */
+async function vendiFigurina(figurina){
+    card = figurina.parentNode.parentNode
+    cardID = card.id
+    rarity=1
+
+    if(card.classList.contains("border-warning"))
+        rarity=2
+    if(card.classList.contains("border-danger"))
+        rarity=3
+
+    if(confirm("Do you want to sell this card for credit: " + rarity + "?")) {
+        await fetch("http://localhost:5500/delCard", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: localStorage.getItem("sessionid"),
+                "cardID": cardID
+            })
+        })
+
+        credit = 0
+        await fetch("http://localhost:5500/user/"+id)
+                .then(response => response.json())
+                .then(response => credit = response.credit)
+
+        credit+=rarity
+
+        await fetch("http://localhost:5500/change", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "id": localStorage.getItem("sessionid"), 
+                "credit": credit
+            })
+        }).then(response => response.text())
+          .then(response => alert(response))
+        
+        location.reload()
+    }
+}
+
+/* funzione per comprare figurina */
+async function compraFigurina(ID) {
+    credit = 0
+    rarity = document.getElementById("rarity")
+
+    if(rarity.innerHTML=="Common")
+        rarity=1
+    else if(rarity.innerHTML=="Rare")
+        rarity=2
+    else
+        rarity=3
+
+    await fetch("http://localhost:5500/user/"+localStorage.getItem("sessionid"))
+        .then(response => response.json())
+        .then(response => credit = response.credit)
+
+    if(credit>=rarity)
+        credit-=rarity
+    else {
+        alert("insufficient credit")
+        return
+    }
+
+    await fetch("http://localhost:5500/change", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "id": localStorage.getItem("sessionid"), 
+            "credit": credit
+        })
+    })
+
+    
+    await fetch("http://localhost:5500/addCard", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: localStorage.getItem("sessionid"),
+            "cardID": ID
+        })
+    }).then(response => response.text())
+      .then(response => alert(response))
+        
+    location.reload()
+    
 }
 
 /* mostra tutte le informazioni su un eroe */
