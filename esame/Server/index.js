@@ -161,7 +161,7 @@ app.delete("/delete/:id", async function(req, res) {
     }
 })
 
-/* funzione per ottenere informazioni sull'utente */
+/* funzione per ottenere informazioni su un utente specifico */
 app.get("/user/:id", async function(req, res){
     id=req.params.id;
     const pwmClient=await client.connect()

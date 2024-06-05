@@ -134,7 +134,7 @@
                 <div class="row px-5 mb-5">
                     <div class="text-white border-bottom d-flex justify-content-between align-items-center" style="text-shadow: 2px 2px 5px black;">
                         <h1 style="font-size: 3vmax;">Your offers</h1>
-                        <button onclick="apriMenu()" id="addtrade" class="mb-1 text-success text-decoration-none d-flex justify-content-center align-items-center border border-success rounded">+</button>
+                        <button onclick="apriMenu()" id="addtrade" class="mb-1 d-none text-success text-decoration-none d-flex justify-content-center align-items-center border border-success rounded">+</button>
                     </div>
                     <div class="d-flex flex-wrap">
                         <!-- layout di ogni scambio creato dall'utente -->
@@ -200,7 +200,7 @@
                                 <div class="d-flex pt-2 h-100">
                                     <div class="d-flex flex-column w-50 border-end">
                                         <!-- offerta -->
-                                        <h1 class="text-center" style="font-size: 1.25vmax;">offer</h1>
+                                        <h1 class="text-center" style="font-size: 1.25vmax;">receive</h1>
                                         <div class="d-flex flex-column align-items-center justify-content-around h-100">
                                             <div class="d-flex flex-column align-items-center justify-content-center" style="max-height: 30%;">
                                                 <a href="./heroprofile.html?id=" target="_blank" class="text-center text-dark text-dark text-decoration-none w-75">
@@ -220,7 +220,7 @@
                                     </div>
                                     <div class="d-flex flex-column w-50">
                                         <!-- ricompensa -->
-                                        <h1 class="text-center" style="font-size: 1.25vmax;">receive</h1>
+                                        <h1 class="text-center" style="font-size: 1.25vmax;">offer</h1>
                                         <div class="d-flex flex-column align-items-center justify-content-around h-100">
                                             <div class="d-flex flex-column align-items-center justify-content-center" style="max-height: 30%;">
                                                 <a href="./heroprofile.html?id=" target="_blank" class="text-center text-dark text-decoration-none w-75">
@@ -241,7 +241,7 @@
                                 </div>
                                 <div class="d-flex flex-column mt-2 justify-content-center">
                                     <p class="mb-2" style="font-size: 0.75vmax;">offered by: <a class="text-decoration-none offerUser" href="./userprofile.html?id=" target="_blank">user</a></p>
-                                    <a onclick="acceptTrade()" class="getbtn">Accept</a>
+                                    <a onclick="acceptTrade(this)" class="getbtn">Accept</a>
                                 </div>
                             </div>
                         </div>
@@ -283,6 +283,7 @@
                 .then(response => response.json())
                 .then(response => showTrades(response))
 
+            
             var newtrade = document.getElementById("newtrade")
             var obscure = document.getElementById("obscure")
             var receivemodule = document.getElementById("receivemodule")
@@ -412,9 +413,45 @@
 
             /* rimuovi offerta creata dall'utente */
             function removeOffer(offer) {
-                choice = confirm("Do you really want to delete this offer?")
-                if(choice)
-                    offer.parentNode.parentNode.remove()
+                if(confirm("Do you really want to delete this offer?")) {
+                    offerTitles = offer.parentNode.parentNode.getElementsByClassName("offerTitle");
+                    user = JSON.parse(localStorage.getItem("user"))
+
+                    for (let i = 0; i < offerTitles.length; i++)
+                        if(offerTitles[i].hasAttribute("id"))
+                            user.cards.push(parseInt(offerTitles[i].id));
+                    
+
+                    localStorage.setItem("user", JSON.stringify(user))    
+                    
+                    
+                    fetch("http://localhost:5500/trade/"+offer.id, {
+                            method: "DELETE",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                "id": offer.id
+                            })
+                        }).then(response => response.text())
+                          .then(response => alert(response))
+                          .then(response => {
+                                fetch("http://localhost:5500/change", {
+                                    method: "POST",
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        "id": user.sessionid, 
+                                        "cards": user.cards
+                                    })
+                            }).then(response => response.text())
+                              .then(response => alert(response))
+                              .then(response => location.reload())
+                        })  /* ricarico la pagina per avere le offerte aggiornate */
+
+                        
+                }
             }
 
             /* funzione per mostrare graficamente una nuova offerta e salvarla nel server */
@@ -424,7 +461,6 @@
                     alert("you have to select at least 1 card to offer and 1 card to receive")
                     return
                 }
-
                 
                 scambio=scambiutente.cloneNode(true)
                 offer=offer.parentNode
@@ -510,9 +546,91 @@
             }
         
             /* funzione per accettare un'offerta */
-            function acceptTrade() {
-                if(localStorage.getItem("user")) {
-                    
+            function acceptTrade(trade) {
+                user = JSON.parse(localStorage.getItem("user"))
+                if(localStorage.getItem("user") && confirm("Do you want to accept this trade?")) {
+                    offerTitles = trade.parentNode.parentNode.getElementsByClassName("offerTitle");  /* figurine offerte da chi pubblica offerta */
+                    receiveTitles = trade.parentNode.parentNode.getElementsByClassName("receiveTitle");  /* figurine ricevute da chi pubblica offerta  */
+                    offerentID = trade.parentNode.getElementsByTagName("a")[0].id
+
+                    /* controllo che l'utente abbia le figurine da offrire */
+                    for (let i = 0; i < receiveTitles.length; i++)
+                        if(receiveTitles[i].hasAttribute("id")) {
+                            console.log(user.cards);
+                            if(user.cards.indexOf(parseInt(receiveTitles[i].id))==-1) {
+                                alert("You don't have the necessary cards to complete this trade")
+                                return
+                            }
+                        }
+
+                    /* rimuovo dall'utente le figurine da cedere */   
+                    for (let i = 0; i < receiveTitles.length; i++) {
+                        index = user.cards.indexOf(receiveTitles[i].id)
+                        user.cards.splice(index, 1)
+                    }
+
+                    /* do all'utente le figurine da ricevere */   
+                    for (let i = 0; i < offerTitles.length; i++) {
+                        if(offerTitles[i].hasAttribute("id"))
+                            user.cards.push(offerTitles[i].id)
+                    }
+
+                    localStorage.setItem("user", JSON.stringify(user))
+
+                    /* cancello la trade accettata */
+                    fetch("http://localhost:5500/trade/"+trade.id, {
+                            method: "DELETE",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                "id": trade.id
+                            })
+                        }).then(response => response.text())
+                          .then(response => alert(response))
+                          .then(response => {
+                                fetch("http://localhost:5500/change", {  /* aggiorno il db dell'utente che ha accettato lo scambio */
+                                    method: "POST",
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        "id": user.sessionid, 
+                                        "cards": user.cards
+                                    })
+                            }).then(response => response.text())
+                              .then(response => alert(response))
+                              .then(response => {
+                                /* ottengo informazioni sull'utente offerente */
+                                fetch("http://localhost:5500/user/"+offerentID)
+                                    .then(response => response.json())
+                                    .then(response => {
+                                        offerentCards = response.cards
+                                        for (let i = 0; i < receiveTitles.length; i++) {
+                                            if(receiveTitles[i].hasAttribute("id")) {
+                                                receiveIndex = offerentCards.indexOf(receiveTitles[i])
+                                                user.cards.splice(receiveIndex, 1)
+                                            }
+                                        }
+
+                                        fetch("http://localhost:5500/change", {  /* aggiorno il db dell'utente che aveva pubblicato lo scambio (gli tolgo le carte) */
+                                            method: "POST",
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                "id": offerentID, 
+                                                "cards": offerentCards
+                                            })
+                                        }).then(response => response.text())
+                                          .then(response => {
+                                            alert(response)
+                                            location.reload()
+                                        })
+                                    })
+                               
+                              })
+                        })  /* ricarico la pagina per avere le offerte aggiornate */
 
                     
                 } else {

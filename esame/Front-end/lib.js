@@ -78,15 +78,12 @@ function mostraFigurine(eroi, n=-1) {
 
 /* funzione per mostrare le figurine dell' utente nella sezione album */
 async function mostraFigurineUtente(id) {
-    cardsID = []
+    user = JSON.parse(localStorage.getItem("user"))
+    cardsID = user.cards
     heroes = { /* creo un json utilizzabile dalla funzione mostraFigurine (con proprietà count e results) per sfruttare ancora la funzione */
         count: 0,
         results: []
     }
-
-    await fetch("http://localhost:5500/user/"+id)
-        .then(response => response.json())
-        .then(response => cardsID=response.cards)
 
     for (let i = 0; i < cardsID.length; i++) {
         await getFromMarvel("public/characters/"+cardsID[i])
@@ -104,6 +101,7 @@ async function vendiFigurina(figurina){
     user = JSON.parse(localStorage.getItem("user"))
     rarity=1
 
+    
     if(card.classList.contains("border-warning"))
         rarity=2
     if(card.classList.contains("border-danger"))
@@ -113,8 +111,7 @@ async function vendiFigurina(figurina){
 
         user.credit+=rarity
 
-        index = user.cards.indexOf(cardID)
-
+        index = user.cards.indexOf(parseInt(cardID))
         user.cards.splice(index, 1)
         localStorage.setItem("user", JSON.stringify(user))        
 
@@ -150,7 +147,7 @@ async function compraFigurina(ID) {
 
     if(user.credit>=rarity) {
         user.credit-=rarity
-        user.cards.push(ID)
+        user.cards.push(parseInt(ID))
         localStorage.setItem("user", JSON.stringify(user))
     } else {
         alert("insufficient credit")
@@ -305,7 +302,7 @@ async function mostraFigurineDaOffrire() {
 
 /* funzione per mostrare tutte le offerte */
 async function showTrades(trades) {
-                
+    addtrade = document.getElementById("addtrade")     
     user = JSON.parse(localStorage.getItem("user"))
 
     for (let i = 0; i < trades.length; i++) {
@@ -320,6 +317,7 @@ async function showTrades(trades) {
 
         offerUser.innerHTML=trades[i].username
         offerUser.href+=trades[i].userID
+        offerUser.id = trades[i].userID
 
         
 
@@ -331,7 +329,8 @@ async function showTrades(trades) {
                     
                     offerImgs[j].src = response.thumbnail.path+"."+response.thumbnail.extension
                     offerTitles[j].innerHTML = response.name
-                    offerTitles[j].parentNode.href+=response.id  /* assegno a ogni figurina l'id */
+                    offerTitles[j].parentNode.href+=response.id  
+                    offerTitles[j].id = response.id             /* assegno a ogni figurina l'id */
 
                     /* calcola la rarità dell'eroe basandosi sulla quantità di fumetti in cui compare (più volte compare più è raro) */
                     offerImgs[j].classList.add("border","border-2")
@@ -352,9 +351,11 @@ async function showTrades(trades) {
             await getFromMarvel("/public/characters/"+trades[i].received[j])
                 .then(response => response = response.results[0])
                 .then(response => {
+
                     receiveImgs[j].src = response.thumbnail.path+"."+response.thumbnail.extension
                     receiveTitles[j].innerHTML = response.name
                     receiveTitles[j].parentNode.href+=response.id  /* assegno a ogni figurina l'id */
+                    receiveTitles[j].id = response.id
 
                     /* calcola la rarità dell'eroe basandosi sulla quantità di fumetti in cui compare (più volte compare più è raro) */
                     receiveImgs[j].classList.add("border","border-2")
@@ -384,4 +385,6 @@ async function showTrades(trades) {
             tradeCard.after(clone);
         }
     }
+
+    addtrade.classList.remove("d-none")
 }
