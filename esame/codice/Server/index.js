@@ -2,6 +2,7 @@
 
 const express = require('express');  //per gestire il server
 var cors = require('cors');  //per evitare problemi di cors
+const fs = require('fs');    // per gestire file
 const crypto = require('crypto');  //per hashare file
 const app = express();
 const port = 5500;
@@ -32,7 +33,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.listen(port, () => {
     console.log("AFSE listening on port " + port)
 })
-
 
 /* funzione per loggare nuovo utente */
 app.post("/login", async function(req, res) {
@@ -185,7 +185,7 @@ app.get("/user/:id", async function(req, res){
             error: "user not found"
         })
     }
-    await client.close();
+    
 })
 
 /* funzione per cambiare proprietà all'utente */
@@ -234,8 +234,6 @@ app.post("/change", async function(req, res){
     } catch (e) {
         console.log(e);
         res.status(500).send("server error")
-    } finally {
-        await client.close();
     }
 })
 
@@ -252,59 +250,91 @@ app.post("/addtrade", async function(req, res) {
       }
     } */
 
-    const pwmClient=await client.connect()
 
     try {
+        /* const pwmClient=await client.connect() */
+        /* await pwmClient.db("AFSE").collection("trades").insertOne(trade); */  //trade sarebbe il successivo newtrade
 
-        trade={
-            "userID": req.body.id,
+        trades = JSON.parse(fs.readFileSync("../../trades.json"))
+        offered = []
+        for (let i = 0; i < req.body.offered.length; i++) 
+            offered.push(parseInt(req.body.offered[i]));
+        
+        received = []
+        for (let i = 0; i < req.body.received.length; i++) 
+            received.push(parseInt(req.body.received[i]));
+
+        newtrade={
+            "tradeid": hash(trades.length.toString()),  //hasho l'id del trade per avere maggiore sicurezza
+            "id": req.body.id,
             "username": req.body.username,
-            "offered": req.body.offered,
-            "received": req.body.received
+            "offered": offered,
+            "received": received
         }
-            
-        await pwmClient.db("AFSE").collection("trades").insertOne(trade);
+          
+        trades.push(newtrade)
+        fs.writeFileSync("../../trades.json", JSON.stringify(trades));
         res.status(201).send("added new trade")
 
     } catch (e) {
         console.log(e);
         res.status(500).send("server error")
-    } finally {
-        await client.close();
     }
 })
 
 /* funzione per cancellare un trade */
 app.delete("/trade/:id", async function(req, res) {
-    tradeID=req.params.id;
+    tradeid=req.params.id;
+    trades = JSON.parse(fs.readFileSync("../../trades.json"))
 
     try {
-        const pwmClient=await client.connect()
 
-        await pwmClient.db("AFSE").collection("trades").deleteOne({_id: ObjectId.createFromHexString(tradeID)});
+        /* const pwmClient=await client.connect()
+        await pwmClient.db("AFSE").collection("trades").deleteOne({_id: ObjectId.createFromHexString(tradeid)}); */
+
+        for (let i = 0; i < trades.length; i++) {
+            if(trades[i].tradeid==tradeid) {
+                trades.splice(i, 1)
+            }
+        }
+
+        fs.writeFileSync("../../trades.json", JSON.stringify(trades));
         res.status(201).send("trade deleted")
-
     } catch (e) {
         console.log(e);
         res.status(500).send("server error")
-    } finally {
-        await client.close();
     }
 })
 
 /* funzione per ottenere i trade */
 app.get("/getTrades", async function(req, res) {
-    const pwmClient=await client.connect()
+    trades = JSON.parse(fs.readFileSync("../../trades.json"))
 
     try {
-        trades = await pwmClient.db("AFSE").collection("trades").find().toArray();
-        res.status(200).send(trades)
+
+        /* const pwmClient=await client.connect()
+        trades = await pwmClient.db("AFSE").collection("trades").find().toArray(); */
+
+        res.status(200).send(JSON.stringify(trades))
     } catch (e) {
         console.log(e);
         res.status(500).send({
             error: "server error"
         })
-    } finally {
-        await client.close();
     }
+})
+
+/* funzione per salvare i trades nel db */
+app.get("/saveTrades", async function(req, res) {
+    trades = JSON.parse(fs.readFileSync("../../trades.json"))
+
+    const pwmClient=await client.connect()
+    await pwmClient.db("AFSE").collection("trades").deleteMany({})
+
+    for (let i = 0; i < trades.length; i++) {
+        await pwmClient.db("AFSE").collection("trades").insertOne(trades[i])
+    }
+    await client.close()
+
+    res.status(201).send("DB updated")
 })

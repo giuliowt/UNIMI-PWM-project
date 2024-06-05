@@ -277,7 +277,7 @@
             user = JSON.parse(localStorage.getItem("user"))
 
             checkIfLogged()
-            
+                     
             /* richiedo al server le offerte pubblicate fin'ora */
             fetch("http://localhost:5500/getTrades")
                 .then(response => response.json())
@@ -447,10 +447,14 @@
                                     })
                             }).then(response => response.text())
                               .then(response => alert(response))
-                              .then(response => location.reload())
+                              .then(response => {
+                                    setTimeout(() => {
+                                        fetch("http://localhost:5500/saveTrades")
+                                            .then(response => location.reload())
+                                    }, 1000)
+                                })
                         })  /* ricarico la pagina per avere le offerte aggiornate */
-
-                        
+  
                 }
             }
 
@@ -505,13 +509,14 @@
                     }
                 }
 
-                fetch("http://localhost:5500/addtrade", {
+                user = JSON.parse(localStorage.getItem("user"))
+                fetch("http://localhost:5500/addtrade", {  /* salva il trade sul server */
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        "id": user.sessionid,
+                        "id": user.sessionid, 
                         "username": user.username,
                         "offered": offerIDs,
                         "received": receiveIDs
@@ -523,15 +528,15 @@
                     scambiutente.after(scambio)
                     chiudiMenu()
 
-                    for (let i = 0; i < user.cards.length; i++) {
-                        index = user.cards.indexOf(IDs[i])
+                    for (let i = 0; i < offerIDs.length; i++) {
+                        index = user.cards.indexOf(parseInt(offerIDs[i]))
                         user.cards.splice(index, 1)
                     }
-                    
                     localStorage.setItem("user", JSON.stringify(user))
 
                 }).then(response => {
-                    fetch("http://localhost:5500/change", {
+                    user = JSON.parse(localStorage.getItem("user"))
+                    fetch("http://localhost:5500/change", {  /* rimuovi temporaneamente le carte all'utente */
                         method: "POST",
                         headers: {
                             'Content-Type': 'application/json'
@@ -541,103 +546,14 @@
                             "cards": user.cards
                         })
                     }).then(response => response.text())
-                    .then(response => alert(response))
+                      .then(response => alert(response))
+                      .then(response => {
+                        setTimeout(() => {
+                            fetch("http://localhost:5500/saveTrades")
+                        }, 1000)
+                      })
                 })
             }
-        
-            /* funzione per accettare un'offerta */
-            function acceptTrade(trade) {
-                user = JSON.parse(localStorage.getItem("user"))
-                if(localStorage.getItem("user") && confirm("Do you want to accept this trade?")) {
-                    offerTitles = trade.parentNode.parentNode.getElementsByClassName("offerTitle");  /* figurine offerte da chi pubblica offerta */
-                    receiveTitles = trade.parentNode.parentNode.getElementsByClassName("receiveTitle");  /* figurine ricevute da chi pubblica offerta  */
-                    offerentID = trade.parentNode.getElementsByTagName("a")[0].id
-
-                    /* controllo che l'utente abbia le figurine da offrire */
-                    for (let i = 0; i < receiveTitles.length; i++)
-                        if(receiveTitles[i].hasAttribute("id")) {
-                            console.log(user.cards);
-                            if(user.cards.indexOf(parseInt(receiveTitles[i].id))==-1) {
-                                alert("You don't have the necessary cards to complete this trade")
-                                return
-                            }
-                        }
-
-                    /* rimuovo dall'utente le figurine da cedere */   
-                    for (let i = 0; i < receiveTitles.length; i++) {
-                        index = user.cards.indexOf(receiveTitles[i].id)
-                        user.cards.splice(index, 1)
-                    }
-
-                    /* do all'utente le figurine da ricevere */   
-                    for (let i = 0; i < offerTitles.length; i++) {
-                        if(offerTitles[i].hasAttribute("id"))
-                            user.cards.push(offerTitles[i].id)
-                    }
-
-                    localStorage.setItem("user", JSON.stringify(user))
-
-                    /* cancello la trade accettata */
-                    fetch("http://localhost:5500/trade/"+trade.id, {
-                            method: "DELETE",
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                "id": trade.id
-                            })
-                        }).then(response => response.text())
-                          .then(response => alert(response))
-                          .then(response => {
-                                fetch("http://localhost:5500/change", {  /* aggiorno il db dell'utente che ha accettato lo scambio */
-                                    method: "POST",
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        "id": user.sessionid, 
-                                        "cards": user.cards
-                                    })
-                            }).then(response => response.text())
-                              .then(response => alert(response))
-                              .then(response => {
-                                /* ottengo informazioni sull'utente offerente */
-                                fetch("http://localhost:5500/user/"+offerentID)
-                                    .then(response => response.json())
-                                    .then(response => {
-                                        offerentCards = response.cards
-                                        for (let i = 0; i < receiveTitles.length; i++) {
-                                            if(receiveTitles[i].hasAttribute("id")) {
-                                                receiveIndex = offerentCards.indexOf(receiveTitles[i])
-                                                user.cards.splice(receiveIndex, 1)
-                                            }
-                                        }
-
-                                        fetch("http://localhost:5500/change", {  /* aggiorno il db dell'utente che aveva pubblicato lo scambio (gli tolgo le carte) */
-                                            method: "POST",
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({
-                                                "id": offerentID, 
-                                                "cards": offerentCards
-                                            })
-                                        }).then(response => response.text())
-                                          .then(response => {
-                                            alert(response)
-                                            location.reload()
-                                        })
-                                    })
-                               
-                              })
-                        })  /* ricarico la pagina per avere le offerte aggiornate */
-
-                    
-                } else {
-                    window.location = "./login.html"
-                }
-            }
-        
             
         </script>
 
