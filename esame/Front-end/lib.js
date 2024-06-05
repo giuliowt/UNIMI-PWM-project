@@ -302,3 +302,86 @@ async function mostraFigurineDaOffrire() {
         offercard.after(clone);
     }
 }
+
+/* funzione per mostrare tutte le offerte */
+async function showTrades(trades) {
+                
+    user = JSON.parse(localStorage.getItem("user"))
+
+    for (let i = 0; i < trades.length; i++) {
+        clone = tradeCard.cloneNode(true);  
+        
+        offerUser = clone.getElementsByClassName("offerUser")[0]
+        offerImgs = clone.getElementsByClassName("offerImg");
+        offerTitles = clone.getElementsByClassName("offerTitle");
+        receiveImgs = clone.getElementsByClassName("receiveImg");
+        receiveTitles = clone.getElementsByClassName("receiveTitle");
+        getbtn = clone.getElementsByClassName("getbtn")[0]
+
+        offerUser.innerHTML=trades[i].username
+        offerUser.href+=trades[i].userID
+
+        
+
+        /* definisco in maniera automatica lo stile di ogni figurina offerta */
+        for (let j = 0; j < trades[i].offered.length; j++) {
+            await getFromMarvel("/public/characters/"+trades[i].offered[j])
+                .then(response => response = response.results[0])
+                .then(response => {
+                    
+                    offerImgs[j].src = response.thumbnail.path+"."+response.thumbnail.extension
+                    offerTitles[j].innerHTML = response.name
+                    offerTitles[j].parentNode.href+=response.id  /* assegno a ogni figurina l'id */
+
+                    /* calcola la rarità dell'eroe basandosi sulla quantità di fumetti in cui compare (più volte compare più è raro) */
+                    offerImgs[j].classList.add("border","border-2")
+                    if(response.comics.available<=10) {
+                        offerImgs[j].classList.add("border-success") /* comune */
+                    } else if(response.comics.available<=50) {
+                        offerImgs[j].classList.add("border-warning") /* rara */
+                    } else {
+                        offerImgs[j].classList.add("border-danger") /* extra rara */
+                    }
+                })
+                
+        }
+        
+        /* definisco in maniera automatica lo stile di ogni figurina ricevuta */
+        for (let j = 0; j < trades[i].received.length; j++) {
+            
+            await getFromMarvel("/public/characters/"+trades[i].received[j])
+                .then(response => response = response.results[0])
+                .then(response => {
+                    receiveImgs[j].src = response.thumbnail.path+"."+response.thumbnail.extension
+                    receiveTitles[j].innerHTML = response.name
+                    receiveTitles[j].parentNode.href+=response.id  /* assegno a ogni figurina l'id */
+
+                    /* calcola la rarità dell'eroe basandosi sulla quantità di fumetti in cui compare (più volte compare più è raro) */
+                    receiveImgs[j].classList.add("border","border-2")
+                    if(response.comics.available<=10) {
+                        receiveImgs[j].classList.add("border-success") /* comune */
+                    } else if(response.comics.available<=50) {
+                        receiveImgs[j].classList.add("border-warning") /* rara */
+                    } else {
+                        receiveImgs[j].classList.add("border-danger") /* extra rara */
+                    }
+                })
+        }
+
+        
+
+        clone.classList.remove("d-none");
+        getbtn.id=trades[i]._id
+        
+        /* nel caso in cui l'offerta sia stata inserita dall'utente */
+        if(user!=null && user.sessionid==trades[i].userID) {
+            userTradeCard.after(clone)
+            getbtn.setAttribute("onclick", "removeOffer(this)")
+            getbtn.classList.add("delbtn")
+            getbtn.classList.remove("getbtn")
+            getbtn.innerHTML="Remove"
+        } else { /* nel caso in cui l'offerta sia globale */
+            tradeCard.after(clone);
+        }
+    }
+}

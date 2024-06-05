@@ -277,8 +277,6 @@
             user = JSON.parse(localStorage.getItem("user"))
 
             checkIfLogged()
-            cercaFigurineDaCedere()
-            mostraFigurineDaOffrire()
             
             /* richiedo al server le offerte pubblicate fin'ora */
             fetch("http://localhost:5500/getTrades")
@@ -293,12 +291,20 @@
             var offeredCards = document.getElementById("offeredCards")
             var clonecontainer = document.getElementById("clonecontainer")
             var scambiutente = document.getElementById("scambiutente")
+            var tradeCard = document.getElementById("tradecard")
+            var userTradeCard = document.getElementById("scambiutente")
             var selectedAddBtn
             var selectedDelBtn
             var offered=false, received=false
+            var firstOpen=true
 
             /* apri menu nuova offerta */
             function apriMenu() {
+                if(firstOpen) {
+                    cercaFigurineDaCedere()
+                    mostraFigurineDaOffrire()
+                    firstOpen = false
+                }
                 if(JSON.stringify(localStorage.getItem("user"))) {
                     obscure.classList.remove("d-none")
                     newtrade.classList.remove("d-none")
@@ -330,8 +336,9 @@
                 received=false
             }
 
-            /* apre menu per selezionare quale figurina chiedere in una nuova offerta */
+            /* apre menu per selezionare quale figurina cedere in una nuova offerta */
             function toggleModuloRicevi(n) {
+                
                 if(n!=selectedAddBtn)
                     receivemodule.classList.remove("d-none")
                 else
@@ -340,7 +347,7 @@
                 selectedAddBtn=n
             }
 
-            /* apre menu per selezionare quale figurina chiedere in una nuova offerta */
+            /* apre menu per selezionare quale figurina offrire in una nuova offerta */
             function toggleModuloOffri(n) {
                 if(n!=selectedDelBtn)
                     offermodule.classList.remove("d-none")
@@ -421,7 +428,8 @@
                 
                 scambio=scambiutente.cloneNode(true)
                 offer=offer.parentNode
-                IDs=[]
+                offerIDs=[]
+                receiveIDs=[]
 
                 for (let i = 0; i < 6; i++) {
                     if(offer.getElementsByTagName("img")[i].src.endsWith("/addbtn.svg")==false && offer.getElementsByTagName("img")[i].src.endsWith("/images/delbtn.svg")==false) {
@@ -429,8 +437,10 @@
                         scambio.getElementsByTagName("h6")[i].innerHTML=offer.getElementsByTagName("h3")[i].innerHTML
                         scambio.getElementsByTagName("a")[i].classList.remove("d-none")
                         
-                        
-                        IDs.push(offer.getElementsByTagName("img")[i].parentNode.id)
+                        if(i<=2)
+                            offerIDs.push(offer.getElementsByTagName("img")[i].parentNode.id)
+                        else
+                            receiveIDs.push(offer.getElementsByTagName("img")[i].parentNode.id)
 
                         if(offer.getElementsByTagName("img")[i].classList.contains("border-success")) {
                             scambio.getElementsByTagName("img")[i].classList.remove("border-warning")
@@ -448,6 +458,8 @@
                     }
                 }
                 
+                /* controlla se ci sono carte uguali */
+                IDs = offerIDs.concat(receiveIDs)
                 for (let i = 0; i < IDs.length; i++) {
                     for (let j = 0; j < IDs.length; j++) {
                         if(IDs[i]==IDs[j] && i!=j){
@@ -465,8 +477,8 @@
                     body: JSON.stringify({
                         "id": user.sessionid,
                         "username": user.username,
-                        "offered": IDs.slice(0, 2),
-                        "received": IDs.slice(3, 5)
+                        "offered": offerIDs,
+                        "received": receiveIDs
                     })
                 }).then(response => response.text())
                   .then(response => {
@@ -508,82 +520,7 @@
                 }
             }
         
-            /* funzione per mostrare le offerte */
-            function showTrades(trades) {
-                tradeCard = document.getElementById("tradecard")
-                userTradeCard = document.getElementById("scambiutente")
-                user = JSON.parse(localStorage.getItem("user"))
-
-                for (let i = 0; i < trades.length; i++) {
-                    clone = tradeCard.cloneNode(true);  
-                    offerUser = clone.getElementsByClassName("offerUser")[0]
-                    offerImgs = clone.getElementsByClassName("offerImg");
-                    offerTitles = clone.getElementsByClassName("offerTitle");
-                    receiveImgs = clone.getElementsByClassName("receiveImg");
-                    receiveTitles = clone.getElementsByClassName("receiveTitle");
-                    getbtn = clone.getElementsByClassName("getbtn")[0]
-
-                    offerUser.innerHTML=trades[i].username
-                    offerUser.href+=trades[i].userID
-
-                    /* definisco in maniera automatica lo stile di ogni figurina offerta */
-                    for (let j = 0; j < trades[i].offered.length; j++) {
-                        getFromMarvel("/public/characters/"+trades[i].offered[j])
-                            .then(response => response = response.results[i])
-                            .then(response => {
-                                offerImgs[j].src = response.thumbnail.path+"."+response.thumbnail.extension
-                                offerTitles[j].innerHTML = response.name
-                                offerTitles[j].parentNode.href+=response.id  /* assegno a ogni figurina l'id */
-
-                                /* calcola la rarità dell'eroe basandosi sulla quantità di fumetti in cui compare (più volte compare più è raro) */
-                                offerImgs[j].classList.add("border","border-2")
-                                if(response.comics.available<=10) {
-                                    offerImgs[j].classList.add("border-success") /* comune */
-                                } else if(response.comics.available<=50) {
-                                    offerImgs[j].classList.add("border-warning") /* rara */
-                                } else {
-                                    offerImgs[j].classList.add("border-danger") /* extra rara */
-                                }
-                            })
-                    }
-
-                    /* definisco in maniera automatica lo stile di ogni figurina ricevuta */
-                    for (let j = 0; j < trades[i].received.length; j++) {
-                        getFromMarvel("/public/characters/"+trades[i].received[j])
-                            .then(response => response = response.results[i])
-                            .then(response => {
-                                receiveImgs[j].src = response.thumbnail.path+"."+response.thumbnail.extension
-                                receiveTitles[j].innerHTML = response.name
-                                receiveTitles[j].parentNode.href+=response.id  /* assegno a ogni figurina l'id */
-
-                                /* calcola la rarità dell'eroe basandosi sulla quantità di fumetti in cui compare (più volte compare più è raro) */
-                                receiveImgs[j].classList.add("border","border-2")
-                                if(response.comics.available<=10) {
-                                    receiveImgs[j].classList.add("border-success") /* comune */
-                                } else if(response.comics.available<=50) {
-                                    receiveImgs[j].classList.add("border-warning") /* rara */
-                                } else {
-                                    receiveImgs[j].classList.add("border-danger") /* extra rara */
-                                }
-                            })
-                    }
-
-                    clone.classList.remove("d-none");
-                    getbtn.id=trades[i]._id
-                    
-
-                    /* nel caso in cui l'offerta sia stata inserita dall'utente */
-                    if(user!=null && user.sessionid==trades[i].userID) {
-                        userTradeCard.after(clone)
-                        getbtn.setAttribute("onclick", "removeOffer(this)")
-                        getbtn.classList.add("delbtn")
-                        getbtn.classList.remove("getbtn")
-                        getbtn.innerHTML="Remove"
-                    } else { /* nel caso in cui l'offerta sia globale */
-                        tradeCard.after(clone);
-                    }
-                }
-            }
+            
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>   <!--necessario per implementare correttamente bootstrap--> 
