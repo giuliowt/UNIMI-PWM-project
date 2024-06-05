@@ -184,6 +184,16 @@
           }
         }
       }
+    },
+    "/saveTrades": {
+      "get": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -283,6 +293,14 @@
       "addtradeSchema": {
         "type": "object",
         "properties": {
+          "tradeid": {
+            "type": "string",
+            "example": "tradeID"
+          },
+          "username": {
+            "type": "string",
+            "example": "username"
+          },
           "id": {
             "type": "string",
             "example": "userID"
@@ -309,6 +327,8 @@
           }
         },
         "required": [
+          "tradeid",
+          "username",
           "id",
           "offered",
           "received"

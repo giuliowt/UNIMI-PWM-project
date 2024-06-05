@@ -27,6 +27,8 @@ const doc = {
             $cards: [1234,5678]
         },
         addtradeSchema: {
+            $tradeid: "tradeID",
+            $username: "username",
             $id: "userID",
             $offered: [1234,5678],
             $received: [1234,5678]
