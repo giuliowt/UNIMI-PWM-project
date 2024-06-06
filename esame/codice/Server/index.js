@@ -150,8 +150,20 @@ app.delete("/delete/:id", async function(req, res) {
         const pwmClient=await client.connect()
 
         await pwmClient.db("AFSE").collection("users").deleteOne({_id: ObjectId.createFromHexString(id)});
+
+        trades = JSON.parse(fs.readFileSync("../../trades.json"))
         await client.close();
-        res.status(201).send("user deleted")
+    
+        for (let i = 0; i < trades.length; i++) {
+            if(trades[i].id==id) {  /* cancello le richieste create da quell'utente */
+                trades.splice(i, 1)
+            }
+        }
+        fs.writeFileSync("../../trades.json", JSON.stringify(trades));
+        
+        fetch("http://localhost:5500/saveTrades")
+            .then((response) => {res.status(201).send("user deleted")})
+        
 
     } catch (e) {
         console.log(e);

@@ -192,9 +192,10 @@
                         method: "DELETE"
                     }).then(response => response.text())
                       .then(response => alert(response))
-                    
-                    localStorage.removeItem("user")
-                    window.location="./AFSE.html"
+                      .then(response => {
+                        localStorage.removeItem("user")
+                        window.location="./AFSE.html"
+                      })
                 }
             }
 
